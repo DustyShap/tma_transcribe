@@ -1,14 +1,9 @@
 from __future__ import print_function
 import requests
-import time
-import logging
 import boto3
 from tempfile import NamedTemporaryFile
 from botocore.exceptions import ClientError
 
-
-
-transcribe = boto3.client("transcribe", region_name="us-west-2")
 
 
 class TranscribeJob():
@@ -25,7 +20,6 @@ class TranscribeJob():
 
     def _get_job_name(self):
         return input("What is the name of this job?: ").strip()
-
 
     def _get_job_url(self):
         return input("What is the url of the audio file?: ")
@@ -48,7 +42,6 @@ class TranscribeJob():
                 MediaFormat="mp3",
                 LanguageCode="en-US"
         )
-
 
 
 
