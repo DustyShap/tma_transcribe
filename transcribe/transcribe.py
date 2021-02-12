@@ -18,8 +18,8 @@ def entry_date_to_valid_string(date_string):
     return datetime.datetime.strftime(date_obj, "%m/%d/%Y")
 
 def url_to_filename(url, date):
-    segment = re.findall(r'segment-[0-9]', url)[0]
-    return f'{date}-{segment}.mp3'
+    segment = re.findall(r'([0-9])TMA', url)[0]
+    return f'{date.replace("/","-")}-TMA-Segment{segment}.mp3'
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -48,7 +48,7 @@ class TranscribeJob():
 
     def _get_jobs_by_date(self):
         feed = feedparser.parse(TMA_RSS_FEED)
-        urls = [entry.links[0].href for entry in feed.entries if entry_date_to_valid_string(entry.published) == self.date_input]
+        urls = [entry.links[1].href for entry in feed.entries if entry_date_to_valid_string(entry.published) == self.date_input]
         urls.reverse()
         return urls
 
@@ -60,14 +60,15 @@ class TranscribeJob():
             print(f"No files found for the date {self.date_input}!")
             exit()
         for url in self.job_urls:
-            print(url)
-            # r = requests.get(url)
-            # if r.status_code == 200:
-            #     with NamedTemporaryFile(mode='wb') as f:
-            #         f.write(r.content)
-            #         self.s3.Bucket(self.s3_bucket).upload_file(f.name, url_to_filename(url, self.date_input))
-            # else:
-                # print(f"Failed to download {self.job_url}")
+            filename_to_upload = f"uploaded_segments/{self.date_input.replace('/','')}/{url_to_filename(url, self.date_input)}"
+            r = requests.get(url)
+            if r.status_code == 200:
+                with NamedTemporaryFile(mode='wb') as f:
+                    f.write(r.content)
+                    self.s3.Bucket(self.s3_bucket).upload_file(f.name, filename_to_upload)
+                    print(f"Uploaded {filename_to_upload}!")
+            else:
+                print(f"Failed to download {url}")
 
     def transcribe_from_s3(self):
         self.transcribe.start_transcription_job(
