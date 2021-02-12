@@ -24,6 +24,9 @@ def url_to_filename(url, date):
 def s3_key(url, date):
     return f"uploaded_segments/{date.replace('/','')}/{url_to_filename(url, date)}"
 
+def transcription_job_name(url):
+    return url[41:49]
+
 ssl._create_default_https_context = ssl._create_unverified_context
 
 class TranscribeJob():
@@ -75,16 +78,17 @@ class TranscribeJob():
 
     def transcribe_from_s3(self):
         for url in self.job_urls:
-            print(s3_key(url, self.date_input))
-            s3_key = s3_key(url, self.date_input)
+            s3Key = s3_key(url, self.date_input)
+            job_name = transcription_job_name(url)
             self.transcribe.start_transcription_job(
-                    TranscriptionJobName=filename_to_upload,
-                    Media={"MediaFileUri": f"s3://{self.s3_bucket}/{s3_key}"},
+                    TranscriptionJobName=job_name,
+                    Media={"MediaFileUri": f"s3://{self.s3_bucket}/{s3Key}"},
                     OutputBucketName='tmatranscribe',
-                    OutputKey=f'completed_transcriptions/{url}.json',
+                    OutputKey=f'completed_transcriptions/{job_name}.json',
                     MediaFormat="mp3",
                     LanguageCode="en-US"
             )
+            print(f"Starting transcription job {job_name}!")
 
 
 
