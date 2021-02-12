@@ -21,6 +21,9 @@ def url_to_filename(url, date):
     segment = re.findall(r'([0-9])TMA', url)[0]
     return f'{date.replace("/","-")}-TMA-Segment{segment}.mp3'
 
+def s3_key(url, date):
+    return f"uploaded_segments/{date.replace('/','')}/{url_to_filename(url, date)}"
+
 ssl._create_default_https_context = ssl._create_unverified_context
 
 class TranscribeJob():
@@ -60,25 +63,28 @@ class TranscribeJob():
             print(f"No files found for the date {self.date_input}!")
             exit()
         for url in self.job_urls:
-            filename_to_upload = f"uploaded_segments/{self.date_input.replace('/','')}/{url_to_filename(url, self.date_input)}"
+            filename = s3_key(url, self.date_input)
             r = requests.get(url)
             if r.status_code == 200:
                 with NamedTemporaryFile(mode='wb') as f:
                     f.write(r.content)
-                    self.s3.Bucket(self.s3_bucket).upload_file(f.name, filename_to_upload)
-                    print(f"Uploaded {filename_to_upload}!")
+                    self.s3.Bucket(self.s3_bucket).upload_file(f.name, filename)
+                    print(f"Uploaded {filename}!")
             else:
                 print(f"Failed to download {url}")
 
     def transcribe_from_s3(self):
-        self.transcribe.start_transcription_job(
-                TranscriptionJobName=self.job_name,
-                Media={"MediaFileUri": f"s3://{self.s3_bucket}/{self.file_name}.mp3"},
-                OutputBucketName='tmatranscribe',
-                OutputKey=f'completed_transcriptions/{self.job_name}.json',
-                MediaFormat="mp3",
-                LanguageCode="en-US"
-        )
+        for url in self.job_urls:
+            print(s3_key(url, self.date_input))
+            s3_key = s3_key(url, self.date_input)
+            self.transcribe.start_transcription_job(
+                    TranscriptionJobName=filename_to_upload,
+                    Media={"MediaFileUri": f"s3://{self.s3_bucket}/{s3_key}"},
+                    OutputBucketName='tmatranscribe',
+                    OutputKey=f'completed_transcriptions/{url}.json',
+                    MediaFormat="mp3",
+                    LanguageCode="en-US"
+            )
 
 
 
@@ -86,4 +92,4 @@ class TranscribeJob():
 if __name__ == "__main__":
     transcribe = TranscribeJob()
     transcribe.upload_audio_to_s3()
-    # transcribe.transcribe_from_s3()
+    transcribe.transcribe_from_s3()
