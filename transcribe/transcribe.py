@@ -25,7 +25,7 @@ def s3_key(url, date):
     return f"uploaded_segments/{date.replace('/','')}/{url_to_filename(url, date)}"
 
 def transcription_job_name(url):
-    return url[41:49]
+    return url[28:55]
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -58,9 +58,6 @@ class TranscribeJob():
         urls.reverse()
         return urls
 
-    def get_published_date(self):
-        pass
-
     def upload_audio_to_s3(self):
         if not self.job_urls:
             print(f"No files found for the date {self.date_input}!")
@@ -79,15 +76,15 @@ class TranscribeJob():
     def transcribe_from_s3(self):
         for url in self.job_urls:
             s3Key = s3_key(url, self.date_input)
-            job_name = transcription_job_name(url)
+            job_name = s3Key.replace('.mp3','')[28:55]
             self.transcribe.start_transcription_job(
-                    TranscriptionJobName=job_name,
-                    Media={"MediaFileUri": f"s3://{self.s3_bucket}/{s3Key}"},
-                    OutputBucketName='tmatranscribe',
-                    OutputKey=f'completed_transcriptions/{job_name}.json',
-                    MediaFormat="mp3",
-                    LanguageCode="en-US"
-            )
+                     TranscriptionJobName=job_name,
+                     Media={"MediaFileUri": f"s3://{self.s3_bucket}/{s3Key}"},
+                     OutputBucketName='tmatranscribe',
+                     OutputKey=f'completed_transcriptions/{job_name}.json',
+                     MediaFormat="mp3",
+                     LanguageCode="en-US",
+             )
             print(f"Starting transcription job {job_name}!")
 
 
