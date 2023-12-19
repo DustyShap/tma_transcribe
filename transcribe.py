@@ -17,7 +17,7 @@ def download_and_transcribe(url):
 
         # Load and use the Whisper model
         model = whisper.load_model("medium")
-        result = model.transcribe(temp_file.name, verbose=True)
+        result = model.transcribe(temp_file.name, verbose=True, output_format="json")
 
     # Temporary file is automatically deleted here
     return result
