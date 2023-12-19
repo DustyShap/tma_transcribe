@@ -3,6 +3,8 @@ import whisper
 import tempfile
 import sys
 
+from whisper.utils import get_writer
+
 
 def download_and_transcribe(url):
     """Download an MP3 file, transcribe it, and clean up."""
@@ -17,7 +19,13 @@ def download_and_transcribe(url):
 
         # Load and use the Whisper model
         model = whisper.load_model("medium")
-        result = model.transcribe(temp_file.name, verbose=True, output_format="json")
+        audio = temp_file.name
+        result = model.transcribe(temp_file.name)
+        output_directory = "./"
+        json_writer = get_writer("json", output_directory)
+        json_writer(result, 'testfilename')
+
+
 
     # Temporary file is automatically deleted here
     return result
