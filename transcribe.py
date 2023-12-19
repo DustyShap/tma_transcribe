@@ -12,6 +12,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+boto3.setup_default_session(aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
+                            aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"),
+                            region_name=os.environ.get("AWS_DEFAULT_REGION"))
 def upload_to_s3(local_file_path, s3_bucket, s3_key):
     """Upload a file to an S3 bucket."""
     s3_client = boto3.client('s3')
