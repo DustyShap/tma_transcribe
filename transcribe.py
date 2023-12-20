@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import concurrent.futures
 import json
 import requests
 import sys
@@ -48,8 +49,8 @@ def download_and_transcribe(url, output_filename, s3_bucket, s3_folder):
         temp_file.write(response.content)
         temp_file.flush()
 
-        model = whisper.load_model("medium")
-        result = model.transcribe(temp_file.name, verbose=True)
+        model = whisper.load_model("small.en")
+        result = model.transcribe(temp_file.name, verbose=True, language="English")
 
         local_file_path = f"./{output_filename}"
         with open(local_file_path, 'w') as f:
@@ -72,12 +73,14 @@ def main():
         print(f"No segments found for {target_date}")
         return
 
-    for url, filename in segments:
-        try:
-            result = download_and_transcribe(url, filename, s3_bucket, s3_folder)
-            print(f"Transcribed and uploaded: {result}")
-        except Exception as e:
-            print(f"An error occurred with {filename}: {e}")
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = [executor.submit(download_and_transcribe, url, filename, s3_bucket, s3_folder) for url, filename in segments]
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                result = future.result()
+                print(f"Transcribed and uploaded: {result}")
+            except Exception as e:
+                print(f"An error occurred with {e}")
 
 if __name__ == "__main__":
     main()
