@@ -34,8 +34,10 @@ def get_segments_for_date(feed_url, target_date):
         pub_date = item.find('pubDate').text
         if target_date_formatted in pub_date:
             enclosure = item.find('enclosure')
-            if enclosure is not None:
-                segments.append(enclosure.get('url'))
+            title = item.find('title').text
+            if enclosure is not None and title is not None:
+                filename = title.replace(' ', '_') + '.json'
+                segments.append((enclosure.get('url'), filename))
 
     return segments
 
@@ -62,24 +64,21 @@ def download_and_transcribe(url, output_filename, s3_bucket, s3_folder):
     return result
 
 def main():
-    # Get the date argument or use today's date
     target_date = sys.argv[1] if len(sys.argv) > 1 else datetime.now().strftime('%Y-%m-%d')
     feed_url = "https://feeds.megaphone.fm/tmastl"
     s3_bucket = "tmatranscribe"
     s3_folder = f"whisper/{target_date}"
 
-    # Fetch and process segments for the target date
     segments = get_segments_for_date(feed_url, target_date)
     if not segments:
         print(f"No segments found for {target_date}")
         return
-    for i, url in enumerate(segments):
-        output_filename = f"{target_date}_{i+1}.json"
+    for url, filename in segments:
         try:
-            transcription = download_and_transcribe(url, output_filename, s3_bucket, s3_folder)
-            print(f"Segment {i+1} transcribed and uploaded: {output_filename}")
+            transcription = download_and_transcribe(url, filename, s3_bucket, s3_folder)
+            print(f"Transcribed and uploaded: {filename}")
         except Exception as e:
-            print(f"An error occurred with segment {i+1}: {e}")
+            print(f"An error occurred with {filename}: {e}")
 
 if __name__ == "__main__":
     main()
