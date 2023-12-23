@@ -49,8 +49,8 @@ def download_and_transcribe(url, output_filename, s3_bucket, s3_folder):
         temp_file.write(response.content)
         temp_file.flush()
 
-        model = whisper.load_model("medium")
-        result = model.transcribe(temp_file.name, verbose=True)
+        model = whisper.load_model("small.en")
+        result = model.transcribe(temp_file.name, language="English", verbose=True)
 
         local_file_path = f"./{output_filename}"
         with open(local_file_path, 'w') as f:
