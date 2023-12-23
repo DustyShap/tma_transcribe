@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+import concurrent.futures
 import json
 import requests
 import sys
@@ -26,6 +26,7 @@ def get_segments_for_date(feed_url, target_date):
     response = requests.get(feed_url)
     root = ET.fromstring(response.content)
     target_date_formatted = datetime.strptime(target_date, '%Y-%m-%d').strftime("%a, %d %b %Y")
+    print(target_date_formatted)
 
     segments = []
     for item in root.findall('.//item'):
@@ -72,12 +73,15 @@ def main():
         print(f"No segments found for {target_date}")
         return
 
-    for url, filename in segments:
-        try:
-            result = download_and_transcribe(url, filename, s3_bucket, s3_folder)
-            print(f"Transcribed and uploaded: {result}")
-        except Exception as e:
-            print(f"An error occurred with {filename}: {e}")
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = [executor.submit(download_and_transcribe, url, filename, s3_bucket, s3_folder) for url, filename in segments]
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                result = future.result()
+                print(f"Transcribed and uploaded: {result}")
+            except Exception as e:
+                print(f"An error occurred with {e}")
 
 if __name__ == "__main__":
     main()
+
