@@ -9,6 +9,7 @@ class Transcription(db.Model):
     transcribed_text = db.Column(db.Text)
     segment_title = db.Column(db.String, nullable=False)
     segment_url = db.Column(db.String, nullable=False)
+    segment_pub_date = db.Column(db.Date, nullable=False)
 
     def to_dict(self):
         return {
