@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Transcription Display</title>
+    <link rel="stylesheet" href= "{{ url_for('static',filename='styles/styles.css') }}">
+</head>
+<div class="container">
+        <header>
+            <h1>Transcribed Segments</h1>
+        </header>
+        <section id="transcriptions" class="transcriptions">
+            <div class="transcription">
+                <h2 class="segment-title" onclick="toggleVisibility('segment1')">Segment 1</h2>
+                <p id="segment1" class="content" style="display: none;">
+                    This is the transcribed text for segment 1. It's clear, concise, and easy to read.
+                </p>
+            </div>
+            <div class="transcription">
+                <h2 class="segment-title" onclick="toggleVisibility('segment2')">Segment 2</h2>
+                <p id="segment2" class="content" style="display: none;">
+                    This is the transcribed text for segment 1. It's clear, concise, and easy to read.
+                </p>
+            </div>
+            <!-- Repeat for other segments -->
+        </section>
+    </div>
+</body>
+<script src="{{ url_for('static',filename='scripts/scripts.js') }}"> </script>
+</html>
+
