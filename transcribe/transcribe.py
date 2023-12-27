@@ -10,11 +10,47 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from dotenv import load_dotenv
 
+from models import Transcription, db
+
 load_dotenv()
 
 boto3.setup_default_session(aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
                             aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"),
                             region_name=os.environ.get("AWS_DEFAULT_REGION"))
+
+
+Certainly! Here is the complete revised script that includes all functions, modified to insert transcription data into your database:
+
+python
+Copy code
+import concurrent.futures
+import requests
+import sys
+import tempfile
+import whisper
+import os
+import xml.etree.ElementTree as ET
+from datetime import datetime
+from dotenv import load_dotenv
+
+from models import Transcription, db  # Assuming models.py contains the correct setup
+
+load_dotenv()
+
+boto3.setup_default_session(aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
+                            aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"),
+                            region_name=os.environ.get("AWS_DEFAULT_REGION"))
+
+def insert_transcription(text, title, url, pub_date):
+    """Insert transcription data into the database."""
+    new_transcription = Transcription(
+        transcribed_text=text,
+        segment_title=title,
+        segment_url=url,
+        segment_pub_date=datetime.strptime(pub_date, '%a, %d %b %Y %H:%M:%S %Z').date()
+    )
+    db.session.add(new_transcription)
+    db.session.commit()
 
 def upload_to_s3(local_file_path, s3_bucket, s3_key):
     """Upload a file to an S3 bucket."""
