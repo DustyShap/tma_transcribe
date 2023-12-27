@@ -10,11 +10,26 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from dotenv import load_dotenv
 
+current_script_dir = os.path.dirname(os.path.abspath(__file__))
+flask_directory = os.path.join(current_script_dir, '..', 'flask')
+sys.path.append(flask_directory)
+from models import Transcription, db
+
 load_dotenv()
 
 boto3.setup_default_session(aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
                             aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"),
                             region_name=os.environ.get("AWS_DEFAULT_REGION"))
+
+def insert_transcription(text, title, url, pub_date):
+    new_transcription = Transcription(
+        transcribed_text=text,
+        segment_title=title,
+        segment_url=url,
+        segment_pub_date=pub_date
+    )
+    db.session.add(new_transcription)
+    db.session.commit()
 
 def upload_to_s3(local_file_path, s3_bucket, s3_key):
     """Upload a file to an S3 bucket."""
@@ -26,7 +41,6 @@ def get_segments_for_date(feed_url, target_date):
     response = requests.get(feed_url)
     root = ET.fromstring(response.content)
     target_date_formatted = datetime.strptime(target_date, '%Y-%m-%d').strftime("%a, %d %b %Y")
-    print(target_date_formatted)
 
     segments = []
     for item in root.findall('.//item'):
@@ -35,13 +49,12 @@ def get_segments_for_date(feed_url, target_date):
             enclosure = item.find('enclosure')
             title = item.find('title').text
             if enclosure is not None and title is not None:
-                filename = title.replace(' ', '_') + '.json'
-                segments.append((enclosure.get('url'), filename))
+                segments.append((enclosure.get('url'), title, pub_date))
 
     return segments
 
-def download_and_transcribe(url, output_filename, s3_bucket, s3_folder):
-    """Download an MP3 file, transcribe it, write to JSON, and upload to S3."""
+def download_and_transcribe(url, title, pub_date):
+    """Download an MP3 file, transcribe it, and insert into the database."""
     response = requests.get(url)
     response.raise_for_status()
 
@@ -52,15 +65,8 @@ def download_and_transcribe(url, output_filename, s3_bucket, s3_folder):
         model = whisper.load_model("small.en")
         result = model.transcribe(temp_file.name, language="English", verbose=True)
 
-        local_file_path = f"./{output_filename}"
-        with open(local_file_path, 'w') as f:
-            json.dump(result, f, indent=4)
-
-        s3_key = f"{s3_folder}/{output_filename}"
-        upload_to_s3(local_file_path, s3_bucket, s3_key)
-        os.remove(local_file_path)
-
-    return output_filename
+        # Insert into database
+        insert_transcription(result['text'], title, url, pub_date)
 
 def main():
     target_date = sys.argv[1] if len(sys.argv) > 1 else datetime.now().strftime('%Y-%m-%d')
@@ -74,7 +80,7 @@ def main():
         return
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = [executor.submit(download_and_transcribe, url, filename, s3_bucket, s3_folder) for url, filename in segments]
+        futures = [executor.submit(download_and_transcribe, url, title, pub_date) for url, title, pub_date in segments]
         for future in concurrent.futures.as_completed(futures):
             try:
                 result = future.result()
@@ -84,3 +90,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
