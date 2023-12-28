@@ -1,40 +1,32 @@
 import concurrent.futures
-import json
+import psycopg2
 import requests
 import sys
 import tempfile
 import whisper
-import boto3
 import os
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from dotenv import load_dotenv
 
-current_script_dir = os.path.dirname(os.path.abspath(__file__))
-flask_directory = os.path.join(current_script_dir, '..', 'flask')
-sys.path.append(flask_directory)
-from models import Transcription, db
 
 load_dotenv()
 
-boto3.setup_default_session(aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
-                            aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"),
-                            region_name=os.environ.get("AWS_DEFAULT_REGION"))
+conn = psycopg2.connect(
+    dbname=os.environ['POSTGRES_DB'],
+    user=os.environ['POSTGRES_USER'],
+    password=os.environ['POSTGRES_PASSWORD'],
+    host=os.environ['POSTGRES_HOST']
+)
 
 def insert_transcription(text, title, url, pub_date):
-    new_transcription = Transcription(
-        transcribed_text=text,
-        segment_title=title,
-        segment_url=url,
-        segment_pub_date=pub_date
-    )
-    db.session.add(new_transcription)
-    db.session.commit()
+    with conn.cursor() as cur:
+        cur.execute("""
+            INSERT INTO transcriptions (transcribed_text, segment_title, segment_url, segment_pub_date)
+            VALUES (%s, %s, %s, %s)
+        """, (text, title, url, pub_date))
+        conn.commit()
 
-def upload_to_s3(local_file_path, s3_bucket, s3_key):
-    """Upload a file to an S3 bucket."""
-    s3_client = boto3.client('s3')
-    s3_client.upload_file(local_file_path, s3_bucket, s3_key)
 
 def get_segments_for_date(feed_url, target_date):
     """Fetch segments from the RSS feed for a specific date."""
@@ -71,8 +63,6 @@ def download_and_transcribe(url, title, pub_date):
 def main():
     target_date = sys.argv[1] if len(sys.argv) > 1 else datetime.now().strftime('%Y-%m-%d')
     feed_url = "https://feeds.megaphone.fm/tmastl"
-    s3_bucket = "tmatranscribe"
-    s3_folder = f"whisper/{target_date}"
 
     segments = get_segments_for_date(feed_url, target_date)
     if not segments:
