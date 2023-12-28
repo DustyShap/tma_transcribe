@@ -15,5 +15,6 @@ class Transcription(db.Model):
         return {
             "transcribed_text": self.transcribed_text,
             "segment_title": self.segment_title,
-            "segment_url": self.segment_url
+            "segment_url": self.segment_url,
+            "segment_pub_date": self.segment_pub_date,
         }

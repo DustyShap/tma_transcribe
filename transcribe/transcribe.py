@@ -74,7 +74,7 @@ def main():
         for future in concurrent.futures.as_completed(futures):
             try:
                 result = future.result()
-                print(f"Transcribed and uploaded: {result}")
+                print(f"Transcribed and uploaded: {target_date}")
             except Exception as e:
                 print(f"An error occurred with {e}")
 
