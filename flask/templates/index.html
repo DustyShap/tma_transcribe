@@ -4,27 +4,31 @@
     <title>Transcription Display</title>
     <link rel="stylesheet" href= "{{ url_for('static',filename='styles/styles.css') }}">
 </head>
-<div class="container">
+<body>
+    <div class="container">
         <header>
             <h1>Transcribed Segments</h1>
         </header>
         <section id="transcriptions" class="transcriptions">
-            <div class="transcription">
-                <h2 class="segment-title" onclick="toggleVisibility('segment1')">Segment 1</h2>
-                <p id="segment1" class="content" style="display: none;">
-                    This is the transcribed text for segment 1. It's clear, concise, and easy to read.
-                </p>
-            </div>
-            <div class="transcription">
-                <h2 class="segment-title" onclick="toggleVisibility('segment2')">Segment 2</h2>
-                <p id="segment2" class="content" style="display: none;">
-                    This is the transcribed text for segment 1. It's clear, concise, and easy to read.
-                </p>
-            </div>
-            <!-- Repeat for other segments -->
+            {% for transcription in transcriptions %}
+                <div class="transcription">
+                    <!-- Display Segment Title -->
+                    <h2 class="segment-title" onclick="toggleVisibility('segment{{ loop.index }}')">
+                        {{ transcription.segment_title }}
+                    </h2>
+                    <!-- Display Transcribed Text -->
+                    <p id="segment{{ loop.index }}" class="content" style="display: none;">
+                        {{ transcription.transcribed_text }}
+                    </p>
+                    <!-- Display Segment URL -->
+                    <a href="{{ transcription.segment_url }}" target="_blank">Link to Original Segment</a>
+                    <!-- Display Publication Date -->
+                    <p>Published on: {{ transcription.segment_pub_date.strftime('%Y-%m-%d') }}</p>
+                </div>
+            {% endfor %}
         </section>
     </div>
+    <script src="{{ url_for('static',filename='scripts/scripts.js') }}"> </script>
 </body>
-<script src="{{ url_for('static',filename='scripts/scripts.js') }}"> </script>
 </html>
 
