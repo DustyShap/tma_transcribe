@@ -6,7 +6,7 @@ import tempfile
 import whisper
 import os
 import xml.etree.ElementTree as ET
-from datetime import datetime, timedelta
+from datetime import datetime
 from dotenv import load_dotenv
 
 
@@ -19,7 +19,6 @@ conn = psycopg2.connect(
     host=os.environ['POSTGRES_HOST']
 )
 
-
 def insert_transcription(text, title, url, pub_date):
     with conn.cursor() as cur:
         cur.execute("""
@@ -28,16 +27,12 @@ def insert_transcription(text, title, url, pub_date):
         """, (text, title, url, pub_date))
         conn.commit()
 
-def date_range(start_date, end_date):
-    """Generate a range of dates from start_date to end_date."""
-    for n in range(int((end_date - start_date).days) + 1):
-        yield start_date + timedelta(n)
 
 def get_segments_for_date(feed_url, target_date):
     """Fetch segments from the RSS feed for a specific date."""
     response = requests.get(feed_url)
     root = ET.fromstring(response.content)
-    target_date_formatted = target_date.strftime("%a, %d %b %Y")
+    target_date_formatted = datetime.strptime(target_date, '%Y-%m-%d').strftime("%a, %d %b %Y")
 
     segments = []
     for item in root.findall('.//item'):
@@ -68,23 +63,20 @@ def download_and_transcribe(url, title, pub_date):
 def main():
     target_date = sys.argv[1] if len(sys.argv) > 1 else datetime.now().strftime('%Y-%m-%d')
     feed_url = "https://feeds.megaphone.fm/tmastl"
-    start_date = datetime.strptime(sys.argv[1], '%Y-%m-%d')
-    end_date = datetime.strptime(sys.argv[2], '%Y-%m-%d')
-    for single_date in date_range(start_date, end_date):
-        segments = get_segments_for_date(feed_url, single_date)
-        if not segments:
-            print(f"No segments found for {target_date}")
-            return
 
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = [executor.submit(download_and_transcribe, url, title, pub_date) for url, title, pub_date in segments]
-            for future in concurrent.futures.as_completed(futures):
-                try:
-                    result = future.result()
-                    print(f"Transcribed and uploaded: {result}")
-                except Exception as e:
-                    print(f"An error occurred with {e}")
+    segments = get_segments_for_date(feed_url, target_date)
+    if not segments:
+        print(f"No segments found for {target_date}")
+        return
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = [executor.submit(download_and_transcribe, url, title, pub_date) for url, title, pub_date in segments]
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                result = future.result()
+                print(f"Transcribed and uploaded: {result}")
+            except Exception as e:
+                print(f"An error occurred with {e}")
 
 if __name__ == "__main__":
     main()
-
