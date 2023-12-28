@@ -37,7 +37,7 @@ def get_segments_for_date(feed_url, target_date):
     """Fetch segments from the RSS feed for a specific date."""
     response = requests.get(feed_url)
     root = ET.fromstring(response.content)
-    target_date_formatted = datetime.strptime(target_date, '%Y-%m-%d').strftime("%a, %d %b %Y")
+    target_date_formatted = target_date.strftime("%a, %d %b %Y")
 
     segments = []
     for item in root.findall('.//item'):
