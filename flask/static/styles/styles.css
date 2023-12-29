@@ -52,3 +52,30 @@ header h1 {
     padding: 10px 0;
     border-bottom: 1px solid #ddd;
 }
+
+/* Pagination styles */
+.pagination {
+    list-style-type: none; /* Removes bullet points */
+    display: flex;        /* Align items horizontally */
+    justify-content: center; /* Center align pagination */
+    padding: 0;           /* Removes default padding */
+}
+
+.pagination li {
+    margin: 0 5px; /* Adds space between page numbers */
+}
+
+.pagination li a {
+    text-decoration: none; /* Removes underline from links */
+    color: inherit; /* Inherits text color */
+		font-size: 1.2em;
+}
+
+.pagination .active a {
+    font-weight: bold; /* Highlights the current page */
+}
+
+.highlight {
+	background-color: yellow;
+	color: black;
+}
