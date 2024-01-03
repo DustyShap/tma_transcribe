@@ -9,6 +9,8 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from dotenv import load_dotenv
 
+from summarize import summarize_transcription
+
 
 load_dotenv()
 
@@ -19,12 +21,12 @@ conn = psycopg2.connect(
     host=os.environ['POSTGRES_HOST']
 )
 
-def insert_transcription(text, title, url, pub_date):
+def insert_transcription(text, title, url, pub_date, segment_summary):
     with conn.cursor() as cur:
         cur.execute("""
-            INSERT INTO transcriptions (transcribed_text, segment_title, segment_url, segment_pub_date)
-            VALUES (%s, %s, %s, %s)
-        """, (text, title, url, pub_date))
+            INSERT INTO transcriptions (transcribed_text, segment_title, segment_url, segment_pub_date, segment_summary)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (text, title, url, pub_date, segment_summary))
         conn.commit()
 
 
@@ -56,9 +58,10 @@ def download_and_transcribe(url, title, pub_date):
 
         model = whisper.load_model("small.en")
         result = model.transcribe(temp_file.name, language="English", verbose=True)
+        segment_summary = summarize_transcription(result['text'])
 
         # Insert into database
-        insert_transcription(result['text'], title, url, pub_date)
+        insert_transcription(result['text'], title, url, pub_date, segment_summary)
 
 def main():
     target_date = sys.argv[1] if len(sys.argv) > 1 else datetime.now().strftime('%Y-%m-%d')

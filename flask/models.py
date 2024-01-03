@@ -10,6 +10,7 @@ class Transcription(db.Model):
     segment_title = db.Column(db.String, nullable=False)
     segment_url = db.Column(db.String, nullable=False)
     segment_pub_date = db.Column(db.Date, nullable=False)
+    segment_summary = db.Column(db.Text)
 
     def to_dict(self):
         return {
@@ -17,4 +18,5 @@ class Transcription(db.Model):
             "segment_title": self.segment_title,
             "segment_url": self.segment_url,
             "segment_pub_date": self.segment_pub_date,
+            "segment_summary": self.segment_summary,
         }
