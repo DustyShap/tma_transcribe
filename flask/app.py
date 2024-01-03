@@ -23,7 +23,8 @@ def search():
     per_page = 10  # Set the number of items per page
 
     if query:
-        paginated_transcriptions = Transcription.query.filter(Transcription.transcribed_text.like(f'%{query}%')).paginate(page=page, per_page=per_page, error_out=False)
+        paginated_transcriptions = Transcription.query.filter(Transcription.transcribed_text.like(f'%{query}%')).order_by(desc(Transcription.segment_pub_date), Transcription.segment_title).paginate(page=page, per_page=per_page, error_out=False)
+
     else:
         # If no search query, just display the first page of all transcriptions
         paginated_transcriptions = Transcription.query.order_by(desc(Transcription.segment_pub_date), Transcription.segment_title).paginate(page=page, per_page=per_page, error_out=False)
