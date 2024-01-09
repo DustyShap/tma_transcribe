@@ -58,8 +58,8 @@ def download_and_transcribe(url, title, pub_date):
 
         model = whisper.load_model("small.en")
         result = model.transcribe(temp_file.name, language="English", verbose=True)
-        segment_summary = summarize_transcription(result['text'])
-
+        # segment_summary = summarize_transcription(result['text'])
+        segment_summary = 'None'
         # Insert into database
         insert_transcription(result['text'], title, url, pub_date, segment_summary)
 
