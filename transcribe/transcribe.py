@@ -2,14 +2,13 @@ import concurrent.futures
 import psycopg2
 import requests
 import sys
-import tempfile
 import whisper
 import os
-import xml.etree.ElementTree as ET
+
 from datetime import datetime
 from dotenv import load_dotenv
 
-from summarize import summarize_transcription
+# from summarize import summarize_transcription
 
 
 load_dotenv()
@@ -22,10 +21,10 @@ conn = psycopg2.connect(
     port=os.environ['POSTGRES_PORT'],
 )
 
-def is_segment_exists(pub_date):
-    """Check if a segment with the given pub_date already exists in the database."""
+def segment_exists(title):
+    """Check if a segment with the given title already exists in the database."""
     with conn.cursor() as cur:
-        cur.execute("SELECT COUNT(*) FROM transcriptions WHERE segment_pub_date = %s", (pub_date,))
+        cur.execute("SELECT COUNT(*) FROM transcriptions WHERE segment_title = %s", (title,))
         count = cur.fetchone()[0]
         return count > 0
 
@@ -83,16 +82,22 @@ def download_and_transcribe(url, title, pub_date):
 def main():
     target_date = sys.argv[1] if len(sys.argv) > 1 else datetime.now().strftime('%Y-%m-%d')
     feed_url = "https://feeds.megaphone.fm/tmastl"
-    if is_segment_exists(target_date):
-        print(f"Segment with pub_date {target_date} already exists in the database. Skipping.")
-        return
     segments = get_segments_for_date(feed_url, target_date)
     if not segments:
         print(f"No segments found for {target_date}")
         return
 
+
+
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = [executor.submit(download_and_transcribe, url, title, pub_date) for url, title, pub_date in segments]
+        futures = []
+        for url, title, pub_date in segments:
+            if segment_exists(title):
+                print(f"Segment with title '{title}' already exists in the database. Skipping.")
+                continue
+            future = executor.submit(download_and_transcribe, url, title, pub_date)
+            futures.append(future)
+
         for future in concurrent.futures.as_completed(futures):
             try:
                 result = future.result()
