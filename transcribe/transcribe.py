@@ -31,32 +31,36 @@ def is_segment_exists(pub_date):
 
 def insert_transcription(text, title, url, pub_date, segment_summary):
     """Insert a transcription into the database if it doesn't exist."""
-    if not is_segment_exists(pub_date):
-        with conn.cursor() as cur:
-            cur.execute("""
-                INSERT INTO transcriptions (transcribed_text, segment_title, segment_url, segment_pub_date, segment_summary)
-                VALUES (%s, %s, %s, %s, %s)
-            """, (text, title, url, pub_date, segment_summary))
-            conn.commit()
-            print(f"Inserted: {pub_date}")
-    else:
-        print(f"Segment with pub_date {pub_date} already exists in the database.")
+    with conn.cursor() as cur:
+        cur.execute("""
+            INSERT INTO transcriptions (transcribed_text, segment_title, segment_url, segment_pub_date, segment_summary)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (text, title, url, pub_date, segment_summary))
+        conn.commit()
+        print(f"Inserted: {pub_date}")
+
 
 
 def get_segments_for_date(feed_url, target_date):
     """Fetch segments from the RSS feed for a specific date."""
     response = requests.get(feed_url)
     root = ET.fromstring(response.content)
-    target_date_formatted = datetime.strptime(target_date, '%Y-%m-%d').strftime("%a, %d %b %Y")
+
+    # Parse the target_date into the desired format (YYYY-MM-DD)
+    target_date_parsed = datetime.strptime(target_date, '%Y-%m-%d').strftime("%Y-%m-%d")
 
     segments = []
     for item in root.findall('.//item'):
         pub_date = item.find('pubDate').text
-        if target_date_formatted in pub_date:
+
+        # Parse the pub_date from the RSS feed into the desired format
+        pub_date_parsed = datetime.strptime(pub_date, '%a, %d %b %Y %H:%M:%S %z').strftime("%Y-%m-%d")
+
+        if target_date_parsed == pub_date_parsed:
             enclosure = item.find('enclosure')
             title = item.find('title').text
             if enclosure is not None and title is not None:
-                segments.append((enclosure.get('url'), title, pub_date))
+                segments.append((enclosure.get('url'), title, pub_date_parsed))
 
     return segments
 
@@ -70,7 +74,7 @@ def download_and_transcribe(url, title, pub_date):
         temp_file.flush()
 
         model = whisper.load_model("small.en")
-        result = model.transcribe(temp_file.name, language="English", verbose=True)
+        result = model.transcribe(temp_file.name, language="English", verbose=True, fp16=False)
         # segment_summary = summarize_transcription(result['text'])
         segment_summary = 'None'
         # Insert into database
@@ -79,7 +83,9 @@ def download_and_transcribe(url, title, pub_date):
 def main():
     target_date = sys.argv[1] if len(sys.argv) > 1 else datetime.now().strftime('%Y-%m-%d')
     feed_url = "https://feeds.megaphone.fm/tmastl"
-
+    if is_segment_exists(target_date):
+        print(f"Segment with pub_date {target_date} already exists in the database. Skipping.")
+        return
     segments = get_segments_for_date(feed_url, target_date)
     if not segments:
         print(f"No segments found for {target_date}")
