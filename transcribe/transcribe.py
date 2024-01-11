@@ -22,13 +22,25 @@ conn = psycopg2.connect(
     port=os.environ['POSTGRES_PORT'],
 )
 
-def insert_transcription(text, title, url, pub_date, segment_summary):
+def is_segment_exists(pub_date):
+    """Check if a segment with the given pub_date already exists in the database."""
     with conn.cursor() as cur:
-        cur.execute("""
-            INSERT INTO transcriptions (transcribed_text, segment_title, segment_url, segment_pub_date, segment_summary)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (text, title, url, pub_date, segment_summary))
-        conn.commit()
+        cur.execute("SELECT COUNT(*) FROM transcriptions WHERE segment_pub_date = %s", (pub_date,))
+        count = cur.fetchone()[0]
+        return count > 0
+
+def insert_transcription(text, title, url, pub_date, segment_summary):
+    """Insert a transcription into the database if it doesn't exist."""
+    if not is_segment_exists(pub_date):
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO transcriptions (transcribed_text, segment_title, segment_url, segment_pub_date, segment_summary)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (text, title, url, pub_date, segment_summary))
+            conn.commit()
+            print(f"Inserted: {pub_date}")
+    else:
+        print(f"Segment with pub_date {pub_date} already exists in the database.")
 
 
 def get_segments_for_date(feed_url, target_date):
