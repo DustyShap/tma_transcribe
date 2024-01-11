@@ -18,7 +18,8 @@ conn = psycopg2.connect(
     dbname=os.environ['POSTGRES_DB'],
     user=os.environ['POSTGRES_USER'],
     password=os.environ['POSTGRES_PASSWORD'],
-    host=os.environ['POSTGRES_HOST']
+    host=os.environ['POSTGRES_HOST'],
+    port=os.environ['POSTGRES_PORT'],
 )
 
 def insert_transcription(text, title, url, pub_date, segment_summary):
