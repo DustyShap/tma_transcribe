@@ -33,8 +33,15 @@
                       <p id="segment{{ loop.index }}" class="content" style="display: none;">
                           {{ transcription.transcribed_text }}
                       </p>
+
                       <!-- Display Segment URL -->
-                      <a href="{{ transcription.segment_url }}" target="_blank">Link to Original Segment</a>
+                      <a href="{{ transcription.segment_url }}" target="_blank">Link to Original Segment</a><br>
+            {% if transcription.segment_summary != 'None' %}
+                <a href="javascript:void(0);" onclick="toggleVisibility('summary{{ loop.index }}')">Display AI Summary</a>
+                <p id="summary{{ loop.index }}" class="content" style="display: none;">
+                    {{ transcription.segment_summary }}
+                </p><br>
+            {% endif %}
                   </div>
               {% endfor %}
             {% endif %}
