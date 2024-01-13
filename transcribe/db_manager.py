@@ -15,7 +15,7 @@ class DatabaseManager:
             port=os.environ['POSTGRES_PORT'],
         )
 
-    def is_segment_exists(self, title):
+    def segment_exists(self, title):
         with self.conn.cursor() as cur:
             cur.execute("SELECT COUNT(*) FROM transcriptions WHERE segment_title = %s", (title,))
             count = cur.fetchone()[0]

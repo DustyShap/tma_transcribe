@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Transcription Display</title>
+    <title>TMA Transcribed</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/TMAflatlogo.png') }}">
 
@@ -16,9 +16,11 @@
             <input type="text" name="query" placeholder="Search transcriptions...">
             <button type="submit">Search</button>
         </form>
+
         {% if query %}
             <h2>Search Results for "{{ query }}"</h2>
         {% endif %}
+        <p>Click on a segment title to display the transcription</p>
         <section id="transcriptions" class="transcriptions">
             {% if no_results %}
               <p>No results found for your search.</p>
