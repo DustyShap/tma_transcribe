@@ -19,6 +19,7 @@
         {% if query %}
             <h2>Search Results for "{{ query }}"</h2>
         {% endif %}
+        <p>Click on a segment title to display the transcription</p>
         <section id="transcriptions" class="transcriptions">
             {% if no_results %}
               <p>No results found for your search.</p>
@@ -37,7 +38,7 @@
                       <!-- Display Segment URL -->
                       <a href="{{ transcription.segment_url }}" target="_blank">Link to Original Segment</a><br>
             {% if transcription.segment_summary != 'None' %}
-                <a href="javascript:void(0);" onclick="toggleVisibility('summary{{ loop.index }}')">Display AI Summary</a>
+                <a href="javascript:void(0);" onclick="toggleVisibility('summary{{ loop.index }}')">Display A.I. Summary</a>
                 <p id="summary{{ loop.index }}" class="content" style="display: none;">
                     {{ transcription.segment_summary }}
                 </p><br>
