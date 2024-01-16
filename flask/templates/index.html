@@ -4,14 +4,13 @@
     <title>TMA Transcribed</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/TMAflatlogo.png') }}">
-
 </head>
 <body onload="highlightSearchTerm('{{ query }}', 'transcriptions')">
     <div class="container">
         <header>
-                      <h1><a href="{{ url_for('transcriptions') }}" style="text-decoration: none; color: inherit;">Transcribed Segments</a></h1>
+            <h1><a href="{{ url_for('transcriptions') }}" style="text-decoration: none; color: inherit;">Transcribed Segments</a></h1>
         </header>
-                <!-- Search Form -->
+
         <form id='search_form' action="{{ url_for('search') }}" method="get">
             <input type="text" name="query" placeholder="Search transcriptions...">
             <button type="submit">Search</button>
@@ -21,52 +20,69 @@
             <h2>Search Results for "{{ query }}"</h2>
         {% endif %}
         <p>Click on a segment title to display the transcription</p>
+
         <section id="transcriptions" class="transcriptions">
             {% if no_results %}
               <p>No results found for your search.</p>
             {% else %}
               {% for transcription in transcriptions %}
                   <div class="transcription">
-                      <!-- Display Segment Title -->
                       <h2 class="segment-title" onclick="toggleVisibility('segment{{ loop.index }}')">
                           {{ transcription.segment_title }}
                       </h2>
-                      <!-- Display Transcribed Text -->
                       <p id="segment{{ loop.index }}" class="content" style="display: none;">
                           {{ transcription.transcribed_text }}
                       </p>
-
-                      <!-- Display Segment URL -->
                       <a href="{{ transcription.segment_url }}" target="_blank">Link to Original Segment</a><br>
-            {% if transcription.segment_summary != 'None' %}
-                <a href="javascript:void(0);" onclick="toggleVisibility('summary{{ loop.index }}')">Display A.I. Summary</a>
-                <p id="summary{{ loop.index }}" class="content" style="display: none;">
-                    {{ transcription.segment_summary }}
-                </p><br>
-            {% endif %}
+                      {% if transcription.segment_summary != 'None' %}
+                          <a href="javascript:void(0);" onclick="toggleVisibility('summary{{ loop.index }}')">Display A.I. Summary</a>
+                          <p id="summary{{ loop.index }}" class="content" style="display: none;">
+                              {{ transcription.segment_summary }}
+                          </p><br>
+                      {% endif %}
                   </div>
               {% endfor %}
             {% endif %}
         </section>
-				<nav aria-label="Page navigation">
-					<ul class="pagination">
-						{% if query %}
-							<!-- Pagination for search results -->
-							{% for page_num in range(1, pagination.pages + 1) %}
-								<li class="page-item {% if page_num == pagination.page %}active{% endif %}">
-									<a class="page-link" href="{{ url_for('search', page=page_num, query=query) }}">{{ page_num }}</a>
-								</li>
-							{% endfor %}
-						{% else %}
-							<!-- Pagination for main listing -->
-							{% for page_num in range(1, pagination.pages + 1) %}
-								<li class="page-item {% if page_num == pagination.page %}active{% endif %}">
-									<a class="page-link" href="{{ url_for('transcriptions', page=page_num) }}">{{ page_num }}</a>
-								</li>
-							{% endfor %}
-						{% endif %}
-					</ul>
-				</nav>
+
+        <!-- Pagination Section -->
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+        <!-- First and Last Page Links -->
+        <li class="page-item {% if pagination.page == 1 %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for(request.endpoint, page=1, query=query) }}">First</a>
+        </li>
+        <!-- Previous Button -->
+        <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for(request.endpoint, page=pagination.prev_num, query=query) }}">Previous</a>
+        </li>
+
+        <!-- Page Number Links with Ellipsis Logic -->
+        {% set left_edge = 2 %}
+        {% set right_edge = 2 %}
+        {% set left_current = 2 %}
+        {% set right_current = 2 %}
+
+        {% for num in range(1, pagination.pages + 1) %}
+            {% if num <= left_edge or num > pagination.pages - right_edge or (num >= pagination.page - left_current and num <= pagination.page + right_current) %}
+                <li class="page-item {% if num == pagination.page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for(request.endpoint, page=num, query=query) }}">{{ num }}</a>
+                </li>
+            {% elif num == pagination.page - left_current - 1 or num == pagination.page + right_current + 1 %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Next Button -->
+        <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for(request.endpoint, page=pagination.next_num, query=query) }}">Next</a>
+        </li>
+        <!-- Last Page Link -->
+        <li class="page-item {% if pagination.page == pagination.pages %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for(request.endpoint, page=pagination.pages, query=query) }}">Last</a>
+        </li>
+    </ul>
+</nav>
     </div>
     <script src="{{ url_for('static', filename='scripts/scripts.js') }}"></script>
 </body>

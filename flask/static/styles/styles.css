@@ -53,27 +53,24 @@ header h1 {
     border-bottom: 1px solid #ddd;
 }
 
-/* Pagination styles */
 .pagination {
-    list-style-type: none; /* Removes bullet points */
-    display: flex;        /* Align items horizontally */
-    justify-content: center; /* Center align pagination */
-    padding: 0;           /* Removes default padding */
+    list-style-type: none;
+    display: flex;
+    justify-content: center;
+    padding: 0;
 }
 
 .pagination li {
-    margin: 0 5px; /* Adds space between page numbers */
+    margin: 0 5px;
 }
 
 .pagination li a {
-    text-decoration: none; /* Removes underline from links */
-    color: inherit; /* Inherits text color */
-		font-size: 1.2em;
+    text-decoration: none;
+    color: inherit;
+    font-size: 1.2em;
 }
 
-.pagination .active a {
-    font-weight: bold; /* Highlights the current page */
-}
+.pagination .active a
 
 .highlight {
 	background-color: yellow;
@@ -82,4 +79,16 @@ header h1 {
 
 #search_form {
     margin-top: 5px;
+}
+
+{
+    font-weight: bold;
+}
+
+.pagination li.disabled > .page-link {
+    color: #ccc;
+}
+
+.page-item.active > .page-link {
+    color: #C41F3A; /* Or your preferred highlight color */
 }
