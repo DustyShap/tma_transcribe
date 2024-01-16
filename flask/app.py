@@ -11,7 +11,7 @@ def transcriptions():
     page = request.args.get('page', 1, type=int)
     per_page = 10  # Adjust as needed
 
-    paginated_transcriptions = Transcription.query.order_by(desc(Transcription.segment_pub_date)).paginate(page=page, per_page=per_page, error_out=False)
+    paginated_transcriptions = Transcription.query.order_by(desc(Transcription.segment_pub_date), Transcription.segment_title).paginate(page=page, per_page=per_page, error_out=False)
     return render_template('index.html', transcriptions=paginated_transcriptions.items, pagination=paginated_transcriptions)
 
 @app.route('/search')
@@ -22,7 +22,7 @@ def search():
 
     paginated_transcriptions = Transcription.query.filter(
         Transcription.transcribed_text.ilike(f'%{query}%')
-    ).order_by(desc(Transcription.segment_pub_date)).paginate(
+    ).order_by(desc(Transcription.segment_pub_date), Transcription.segment_title).paginate(
         page=page, per_page=per_page, error_out=False
     )
     no_results = not paginated_transcriptions.items

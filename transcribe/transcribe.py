@@ -4,10 +4,13 @@ import requests
 import sys
 import whisper
 import os
+import tempfile
+
 
 from datetime import datetime
 from dotenv import load_dotenv
 
+import xml.etree.ElementTree as ET
 # from summarize import summarize_transcription
 
 
