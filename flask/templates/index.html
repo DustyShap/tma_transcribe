@@ -30,6 +30,8 @@
                       <h2 class="segment-title" onclick="toggleVisibility('segment{{ loop.index }}')">
                           {{ transcription.segment_title }}
                       </h2>
+                        <p class="segment-date">
+                            Segment Date: <b>{{ transcription.segment_pub_date }}</b>    </p>
                       <p id="segment{{ loop.index }}" class="content" style="display: none;">
                           {{ transcription.transcribed_text }}
                       </p>

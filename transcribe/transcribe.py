@@ -98,6 +98,7 @@ def main():
             if segment_exists(title):
                 print(f"Segment with title '{title}' already exists in the database. Skipping.")
                 continue
+            print(f"Segment with title '{title}' does not exist in the database. Downloading and transcribing.")
             future = executor.submit(download_and_transcribe, url, title, pub_date)
             futures.append(future)
 
