@@ -36,18 +36,21 @@
                           {{ transcription.transcribed_text }}
                       </p>
                       <a href="{{ transcription.segment_url }}" target="_blank">Link to Original Segment</a><br>
+                                    {% if transcription.segment_summary != 'None' %}
+                          <a href="javascript:void(0);" onclick="toggleVisibility('summary{{ loop.index }}')">Display A.I. Show Notes</a>
+                          <p id="summary{{ loop.index }}" class="content" style="display: none;">
+                              {{ transcription.segment_summary }}
+                          </p><br>
+                      {% endif %}
                               {% if transcription.segment_show_notes %}
             <a href="javascript:void(0);" onclick="toggleVisibility('shownotes{{ loop.index }}')">Display TMA Show Notes</a>
             <p id="shownotes{{ loop.index }}" class="content" style="display: none;">
                 {{ transcription.segment_show_notes }}
             </p><br>
         {% endif %}
-                      {% if transcription.segment_summary != 'None' %}
-                          <a href="javascript:void(0);" onclick="toggleVisibility('summary{{ loop.index }}')">Display A.I. Summary</a>
-                          <p id="summary{{ loop.index }}" class="content" style="display: none;">
-                              {{ transcription.segment_summary }}
-                          </p><br>
-                      {% endif %}
+
+
+
                   </div>
               {% endfor %}
             {% endif %}
