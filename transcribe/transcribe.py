@@ -31,13 +31,13 @@ def segment_exists(title):
         count = cur.fetchone()[0]
         return count > 0
 
-def insert_transcription(text, title, url, pub_date, segment_summary):
+def insert_transcription(text, title, url, pub_date, segment_summary, itunes_summary):
     """Insert a transcription into the database if it doesn't exist."""
     with conn.cursor() as cur:
         cur.execute("""
-            INSERT INTO transcriptions (transcribed_text, segment_title, segment_url, segment_pub_date, segment_summary)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (text, title, url, pub_date, segment_summary))
+            INSERT INTO transcriptions (transcribed_text, segment_title, segment_url, segment_pub_date, segment_summary, segment_show_notes)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (text, title, url, pub_date, segment_summary, itunes_summary))
         conn.commit()
         print(f"Inserted: {pub_date}")
 
@@ -61,12 +61,17 @@ def get_segments_for_date(feed_url, target_date):
         if target_date_parsed == pub_date_parsed:
             enclosure = item.find('enclosure')
             title = item.find('title').text
+            itunes_summary = item.find('{http://www.itunes.com/dtds/podcast-1.0.dtd}summary').text
+            if itunes_summary:
+                # Remove the specific string from itunes_summary
+                itunes_summary = itunes_summary.replace(
+                    "Learn more about your ad choices. Visit megaphone.fm/adchoices", "")
             if enclosure is not None and title is not None:
-                segments.append((enclosure.get('url'), title, pub_date_parsed))
+                segments.append((enclosure.get('url'), title, pub_date_parsed, itunes_summary))
 
     return segments
 
-def download_and_transcribe(url, title, pub_date):
+def download_and_transcribe(url, title, pub_date, itunes_summary):
     """Download an MP3 file, transcribe it, and insert into the database."""
     response = requests.get(url)
     response.raise_for_status()
@@ -80,7 +85,7 @@ def download_and_transcribe(url, title, pub_date):
         # segment_summary = summarize_transcription(result['text'])
         segment_summary = 'None'
         # Insert into database
-        insert_transcription(result['text'], title, url, pub_date, segment_summary)
+        insert_transcription(result['text'], title, url, pub_date, segment_summary, itunes_summary)
 
 def main():
     target_date = sys.argv[1] if len(sys.argv) > 1 else datetime.now().strftime('%Y-%m-%d')
@@ -94,12 +99,12 @@ def main():
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         futures = []
-        for url, title, pub_date in segments:
+        for url, title, pub_date, itunes_summary  in segments:
             if segment_exists(title):
                 print(f"Segment with title '{title}' already exists in the database. Skipping.")
                 continue
             print(f"Segment with title '{title}' does not exist in the database. Downloading and transcribing.")
-            future = executor.submit(download_and_transcribe, url, title, pub_date)
+            future = executor.submit(download_and_transcribe, url, title, pub_date, itunes_summary)
             futures.append(future)
 
         for future in concurrent.futures.as_completed(futures):
