@@ -31,3 +31,7 @@ function highlightSearchTerm(searchTerm, containerId) {
     content = content.replace(regex, '<span class="highlight">$1</span>');
     container.innerHTML = content;
 }
+function toggleAudioPlayer(id) {
+    var player = document.getElementById(id);
+    player.style.display = player.style.display === "none" ? "block" : "none";
+}

@@ -92,3 +92,15 @@ header h1 {
 .page-item.active > .page-link {
     color: #C41F3A; /* Or your preferred highlight color */
 }
+
+.audio-player {
+    margin: 10px 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+audio {
+    width: 100%;
+    max-width: 100%;
+    outline: none;
+}
