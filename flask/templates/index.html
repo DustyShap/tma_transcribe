@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>TMA Transcribed</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/TMAflatlogo.png') }}">
 </head>
@@ -115,6 +116,15 @@
     </div>
     <script src="{{ url_for('static', filename='scripts/scripts.js') }}"></script>
     <script>
+        function highlightSearchTerm(searchTerm, containerId) {
+    if (!searchTerm) return;
+
+    const container = document.getElementById(containerId);
+    let content = container.innerHTML;
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    content = content.replace(regex, '<span class="highlight">$1</span>');
+    container.innerHTML = content;
+}
     document.addEventListener("DOMContentLoaded", function() {
         // Get the dropdown elements
         var yearDropdown = document.getElementById('yearDropdown');

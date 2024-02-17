@@ -70,11 +70,15 @@ header h1 {
     font-size: 1.2em;
 }
 
-.pagination .active a
+.pagination li.active a {
+    color: #C41F3A; /* Or your preferred highlight color */
+}
 
 .highlight {
 	background-color: yellow;
 	color: black;
+    font-weight: bold;
+    font-size: 120%;
 }
 
 #search_form {
@@ -103,4 +107,10 @@ audio {
     width: 100%;
     max-width: 100%;
     outline: none;
+}
+
+@media (max-width: 600px) {
+    input[type="text"] {
+        height: 45px;
+    }
 }

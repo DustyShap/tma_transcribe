@@ -21,16 +21,6 @@ function filterByDate() {
         }
     }
 }
-
-function highlightSearchTerm(searchTerm, containerId) {
-    if (!searchTerm) return;
-
-    const container = document.getElementById(containerId);
-    let content = container.innerHTML;
-    const regex = new RegExp(`(${searchTerm})`, 'gi');
-    content = content.replace(regex, '<span class="highlight">$1</span>');
-    container.innerHTML = content;
-}
 function toggleAudioPlayer(id) {
     var player = document.getElementById(id);
     player.style.display = player.style.display === "none" ? "block" : "none";
