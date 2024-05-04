@@ -59,12 +59,6 @@
                         Your browser does not support the audio tag.
                     </audio>
                 </div>
-                                    {% if transcription.segment_summary != 'None' %}
-                          <a href="javascript:void(0);" onclick="toggleVisibility('summary{{ loop.index }}')">Display A.I. Show Notes</a>
-                          <p id="summary{{ loop.index }}" class="content" style="display: none;">
-                              {{ transcription.segment_summary }}
-                          </p><br>
-                      {% endif %}
                               {% if transcription.segment_show_notes %}
             <a href="javascript:void(0);" onclick="toggleVisibility('shownotes{{ loop.index }}')">Display TMA Show Notes</a>
             <p id="shownotes{{ loop.index }}" class="content" style="display: none;">
