@@ -11,7 +11,6 @@ from datetime import datetime
 from dotenv import load_dotenv
 
 import xml.etree.ElementTree as ET
-# from summarize import summarize_transcription
 
 
 load_dotenv()

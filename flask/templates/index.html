@@ -6,143 +6,73 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/TMAflatlogo.png') }}">
 </head>
-<body onload="highlightSearchTerm('{{ query }}', 'transcriptions')">
+<!--<body onload="highlightSearchTerm('{{ query }}', 'transcriptions')">-->
+<body>
     <div class="container">
         <header>
             <h1><a href="{{ url_for('transcriptions') }}" style="text-decoration: none; color: inherit;">Transcribed Segments</a></h1>
         </header>
 
-
-        <form id='search_form' action="{{ url_for('search') }}" method="get">
-            <input type="text" name="query" placeholder="Search transcriptions...">
-
-    <select name="year" id="yearDropdown">
-        <option value="">Select Year</option>
-        {% for year in unique_years %}
-            <option value="{{ year }}">{{ year }}</option>
-        {% endfor %}
-    </select>
-
-        <select name="month" id="monthDropdown" disabled>
-            <option value="">Select Month</option>
-            {% for m in range(1, 13) %}
-                <option value="{{ m }}">{{ m }}</option>
-            {% endfor %}
-        </select>
-
-            <button type="submit">Search</button>
+           <form id='search_form' action="{{ url_for('search') }}" method="get">
+            <div>
+                <label>Search for up to 5 words that appear in transcriptions:</label>
+                <div id="queryInputs">
+                    <input type="text" name="query1" placeholder="Search transcriptions...">
+                </div>
+                <button type="button" id="addQueryBtn" onclick="addQueryInput()">Add Another Search Term</button>
+                <p class="info-text">Each searched word must appear in the transcribed text of a segment for it to be returned as a result.</p>
+            </div>
+            <div style="margin-top: 20px;">
+<select name="year" id="yearDropdown" class="form-control">
+    <option value="">Select Year</option>
+    {% for year in unique_years %}
+    <option value="{{ year }}">{{ year }}</option>
+    {% endfor %}
+</select>
+<select name="month" id="monthDropdown" class="form-control" disabled>
+    <option value="">Select Month</option>
+    {% for m in range(1, 13) %}
+    <option value="{{ m }}">{{ m }}</option>
+    {% endfor %}
+</select>
+<button type="submit" class="button-primary">Search</button>
+            </div>
         </form>
 
-        {% if query %}
-            <h2>Search Results for "{{ query }}"</h2>
-        {% endif %}
-        <p>Click on a segment title to display the transcription</p>
-
         <section id="transcriptions" class="transcriptions">
-            {% if no_results %}
-              <p>No results found for your search.</p>
-            {% else %}
+            <div class="search-results">
+                <h2>{{ search_description }}</h2>
+            </div>
               {% for transcription in transcriptions %}
-                  <div class="transcription">
-                      <h2 class="segment-title" onclick="toggleVisibility('segment{{ loop.index }}')">
-                          {{ transcription.segment_title }}
-                      </h2>
-                        <p class="segment-date">
-                            Segment Date: <b>{{ transcription.segment_pub_date }}</b>    </p>
-                      <p id="segment{{ loop.index }}" class="content" style="display: none;">
-                          {{ transcription.transcribed_text }}
-                      </p>
-                <a href="javascript:void(0);" class="toggle-audio" onclick="toggleAudioPlayer('audioPlayer{{ loop.index }}')">Listen to Segment</a><br>
+            <div class="transcription">
+                <h2 class="segment-title" onclick="toggleVisibility('content{{ loop.index }}')">
+                    {{ transcription[2] }} <!-- Assuming transcription.segment_title is the third element in the tuple -->
+                </h2>
+                <p class="segment-date">
+                    Segment Date: <b>{{ transcription[4] }}</b> <!-- Assuming transcription.segment_pub_date is the fifth element -->
+                </p>
+                <p id="content{{ loop.index }}" class="content" style="display: none;">
+                    {{ transcription[1] }} <!-- Assuming transcription.transcribed_text is the second element -->
+                </p>
+                <a href="javascript:void(0);" class="toggle-audio" onclick="toggleAudioPlayer('audioPlayer{{ loop.index }}')">Listen to Segment</a>
                 <div id="audioPlayer{{ loop.index }}" class="audio-player" style="display: none;">
                     <audio controls preload="none">
-                        <source src="{{ transcription.segment_url }}" type="audio/mpeg">
+                        <source src="{{ transcription[3] }}" type="audio/mpeg">
                         Your browser does not support the audio tag.
                     </audio>
                 </div>
-                              {% if transcription.segment_show_notes %}
-            <a href="javascript:void(0);" onclick="toggleVisibility('shownotes{{ loop.index }}')">Display TMA Show Notes</a>
-            <p id="shownotes{{ loop.index }}" class="content" style="display: none;">
-                {{ transcription.segment_show_notes }}
-            </p><br>
-        {% endif %}
-
-
-
-                  </div>
-              {% endfor %}
-            {% endif %}
+                {% if transcription[5] %}
+                <a href="javascript:void(0);" class="toggle-visibility" onclick="toggleVisibility('shownotes{{ loop.index }}')">Display TMA Show Notes</a>
+                <p id="shownotes{{ loop.index }}" class="content" style="display: none;">
+                    {{ transcription[5] }} <!-- Assuming transcription.segment_show_notes is the sixth element -->
+                </p>
+                {% endif %}
+            </div>
+            {% else %}
+            <p>No transcriptions found.</p>
+            {% endfor %}
         </section>
-
-<!-- Pagination Section -->
-<nav aria-label="Page navigation">
-    <ul class="pagination">
-        <!-- First Page Link -->
-        <li class="page-item {% if pagination.page == 1 %}disabled{% endif %}">
-            <a class="page-link" href="{{ url_for(request.endpoint, page=1, query=query, year=year, month=month) }}">First</a>
-        </li>
-
-        <!-- Previous Button -->
-        <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
-            <a class="page-link" href="{{ url_for(request.endpoint, page=pagination.prev_num, query=query, year=year, month=month) }}">Previous</a>
-        </li>
-
-        <!-- Page Number Links -->
-        {% set window_size = 2 %}
-        {% for num in range(pagination.page - window_size, pagination.page + window_size + 1) %}
-            {% if num > 0 and num <= pagination.pages %}
-                <li class="page-item {% if num == pagination.page %}active{% endif %}">
-                    <a class="page-link" href="{{ url_for(request.endpoint, page=num, query=query, year=year, month=month) }}">{{ num }}</a>
-                </li>
-            {% endif %}
-        {% endfor %}
-
-        <!-- Next Button -->
-        <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
-            <a class="page-link" href="{{ url_for(request.endpoint, page=pagination.next_num, query=query, year=year, month=month) }}">Next</a>
-        </li>
-
-        <!-- Last Page Link -->
-        <li class="page-item {% if pagination.page == pagination.pages %}disabled{% endif %}">
-            <a class="page-link" href="{{ url_for(request.endpoint, page=pagination.pages, query=query, year=year, month=month) }}">Last</a>
-        </li>
-    </ul>
-</nav>
     </div>
     <script src="{{ url_for('static', filename='scripts/scripts.js') }}"></script>
-    <script>
-        function highlightSearchTerm(searchTerm, containerId) {
-    if (!searchTerm) return;
-
-    const container = document.getElementById(containerId);
-    let content = container.innerHTML;
-    const regex = new RegExp(`(${searchTerm})`, 'gi');
-    content = content.replace(regex, '<span class="highlight">$1</span>');
-    container.innerHTML = content;
-}
-    document.addEventListener("DOMContentLoaded", function() {
-        // Get the dropdown elements
-        var yearDropdown = document.getElementById('yearDropdown');
-        var monthDropdown = document.getElementById('monthDropdown');
-
-        // Listen for changes on the year dropdown
-        yearDropdown.addEventListener('change', function() {
-            // Enable the month dropdown if a valid year is selected, otherwise disable it
-            if(yearDropdown.value) {
-                monthDropdown.removeAttribute('disabled');
-            } else {
-                monthDropdown.setAttribute('disabled', 'disabled');
-                monthDropdown.value = ''; // Reset month selection when year is deselected
-            }
-        });
-    });
-    document.addEventListener("DOMContentLoaded", function() {
-    // Previous JavaScript code...
-
-    // Check the initial state of the year dropdown and set the month dropdown accordingly
-    if(yearDropdown.value) {
-        monthDropdown.removeAttribute('disabled');
-    }
-});
-    </script>
 </body>
 </html>
