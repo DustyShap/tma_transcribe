@@ -32,63 +32,101 @@ def fetch_unique_years(cursor):
 
 @app.route('/')
 def transcriptions():
+    page = request.args.get('page', 1, type=int)  # Get the current page number, defaulting to 1
+    per_page = 20  # Define how many items you want per page
+
     conn = get_db_connection()
     try:
         cur = conn.cursor()
         unique_years = fetch_unique_years(cur)
-        transcription_query = "SELECT * FROM transcriptions ORDER BY segment_pub_date DESC, segment_title LIMIT 100;"
-        cur.execute(transcription_query)
+
+        # Calculate the offset and limit for SQL query
+        offset = (page - 1) * per_page
+
+        # Fetch paginated transcriptions
+        cur.execute("""
+            SELECT * FROM transcriptions 
+            ORDER BY segment_pub_date DESC 
+            LIMIT %s OFFSET %s;
+        """, (per_page, offset))
+        transcriptions = cur.fetchall()
+
+        # Get total count of transcriptions for pagination
+        cur.execute("SELECT COUNT(*) FROM transcriptions")
+        total_transcriptions = cur.fetchone()[0]
+
+    finally:
+        cur.close()
+        conn.close()
+
+    total_pages = (total_transcriptions + per_page - 1) // per_page  # Calculate total number of pages
+
+    return render_template(
+        'index.html',
+        transcriptions=transcriptions,
+        unique_years=unique_years,
+        current_page=page,
+        total_pages=total_pages
+    )
+
+
+@app.route('/search')
+def search():
+    queries = [request.args.get(f'query{i}', default='') for i in range(1, 6)]  # Support up to 5 queries
+    year = request.args.get('year', type=int, default=None)
+    month = request.args.get('month', type=int, default=None)
+    page = request.args.get('page', 1, type=int)  # Current page
+    per_page = 20  # Items per page
+
+    conn = get_db_connection()
+    try:
+        cur = conn.cursor()
+        unique_years = fetch_unique_years(cur)
+
+        # Construct base SQL query
+        sql_query = "SELECT * FROM transcriptions WHERE 1=1"
+        count_query = "SELECT COUNT(*) FROM transcriptions WHERE 1=1"
+        params = []
+
+        # Append conditions for queries
+        for query in filter(None, queries):  # Skip empty queries
+            sql_query += " AND transcribed_text ILIKE %s"
+            count_query += " AND transcribed_text ILIKE %s"
+            params.append(f'%{query}%')
+
+        # Append conditions for year and month
+        if year:
+            sql_query += " AND EXTRACT(YEAR FROM segment_pub_date) = %s"
+            count_query += " AND EXTRACT(YEAR FROM segment_pub_date) = %s"
+            params.append(year)
+        if month:
+            sql_query += " AND EXTRACT(MONTH FROM segment_pub_date) = %s"
+            count_query += " AND EXTRACT(MONTH FROM segment_pub_date) = %s"
+            params.append(month)
+
+        # Fetch the count of relevant transcriptions
+        cur.execute(count_query, params)
+        total_results = cur.fetchone()[0]
+        total_pages = (total_results + per_page - 1) // per_page
+
+        # Fetch the relevant transcriptions
+        sql_query += " ORDER BY segment_pub_date DESC LIMIT %s OFFSET %s"
+        params.extend([per_page, (page - 1) * per_page])
+        cur.execute(sql_query, params)
         transcriptions = cur.fetchall()
 
     finally:
         cur.close()
         conn.close()
-
-    return render_template('index.html', transcriptions=transcriptions, unique_years=unique_years)
-
-
-@app.route('/search')
-def search():
-    queries = [request.args.get(f'query{i}', default='') for i in range(1, 6)]  # Support for up to 5 queries
-    year = request.args.get('year', type=int, default=None)
-    month = request.args.get('month', type=int, default=None)
-    conn = get_db_connection()
-    try:
-        cur = conn.cursor()
-        unique_years = fetch_unique_years(cur)
-
-        # Build the search query
-        sql_query = "SELECT * FROM transcriptions WHERE 1=1"
-        params = []
-
-        for query in filter(None, queries):  # This ignores empty strings
-            sql_query += " AND transcribed_text ILIKE %s"
-            params.append(f'%{query}%')
-        if year:
-            sql_query += " AND EXTRACT(YEAR FROM segment_pub_date) = %s"
-            params.append(year)
+    search_terms = ', '.join(filter(None, queries))
+    search_description = f"Search results for: {search_terms}"
+    if year:
         if month:
-            sql_query += " AND EXTRACT(MONTH FROM segment_pub_date) = %s"
-            params.append(month)
-        sql_query += " ORDER BY segment_pub_date DESC"
-
-        cur.execute(sql_query, params)
-        results = cur.fetchall()
-
-    finally:
-        cur.close()
-        conn.close()
-
-    search_description = "Search results"
-    if queries:
-        search_description += " for: " + ", ".join(filter(None, queries))
-    if year and month:
-        search_description += f" in {month}/{year}"
-    elif year:
-        search_description += f" in {year}"
-
-    return render_template('index.html', transcriptions=results, unique_years=unique_years, search_description=search_description)
-
+            search_description += f" in {month}/{year}"
+        else:
+            search_description += f" in {year}"
+    return render_template('index.html', transcriptions=transcriptions, unique_years=unique_years,
+                           total_pages=total_pages, current_page=page, queries=queries, year=year, month=month, search_description=search_description)
 
 
 if __name__ == "__main__":

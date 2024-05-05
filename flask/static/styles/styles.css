@@ -194,3 +194,36 @@ audio {
 .query-input { margin-top: 10px; }
 
 .remove-btn { margin-left: 10px; color: red; cursor: pointer; }
+
+/* Pagination styling */
+.pagination {
+    display: flex;
+    justify-content: center;  /* Center pagination horizontally */
+    align-items: center;      /* Align items in a way that they are vertically centered */
+    padding: 20px 0;          /* Add padding for spacing from other elements */
+    list-style: none;         /* Remove default list styling */
+    margin: 20px 0;           /* Add margin around the pagination for better spacing */
+}
+
+.pagination .page-item {
+    margin: 0 5px; /* Spacing between pagination items */
+}
+
+.pagination .page-link {
+    color: #007bff;             /* Set link color */
+    text-decoration: none;      /* Remove underline */
+    padding: 8px 12px;          /* Padding inside each pagination link */
+    border-radius: 4px;         /* Rounded corners for links */
+    border: 1px solid #dee2e6;  /* Border for links */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effects */
+}
+
+.pagination .page-link:hover {
+    background-color: #f8f9fa;  /* Slight background on hover */
+    color: #0056b3;             /* Change color on hover */
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff;  /* Active item background color */
+    color: white;               /* Active item text color */
+}
