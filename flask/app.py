@@ -46,7 +46,7 @@ def transcriptions():
         # Fetch paginated transcriptions
         cur.execute("""
             SELECT * FROM transcriptions 
-            ORDER BY segment_pub_date DESC 
+            ORDER BY segment_pub_date DESC, segment_title ASC
             LIMIT %s OFFSET %s;
         """, (per_page, offset))
         transcriptions = cur.fetchall()

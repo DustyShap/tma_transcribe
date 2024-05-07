@@ -30,13 +30,13 @@ def segment_exists(title):
         count = cur.fetchone()[0]
         return count > 0
 
-def insert_transcription(text, title, url, pub_date, segment_summary, itunes_summary):
+def insert_transcription(text, title, url, pub_date, itunes_summary):
     """Insert a transcription into the database if it doesn't exist."""
     with conn.cursor() as cur:
         cur.execute("""
-            INSERT INTO transcriptions (transcribed_text, segment_title, segment_url, segment_pub_date, segment_summary, segment_show_notes)
-            VALUES (%s, %s, %s, %s, %s, %s)
-        """, (text, title, url, pub_date, segment_summary, itunes_summary))
+            INSERT INTO transcriptions (transcribed_text, segment_title, segment_url, segment_pub_date, segment_show_notes)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (text, title, url, pub_date, itunes_summary))
         conn.commit()
         print(f"Inserted: {pub_date}")
 
@@ -81,10 +81,8 @@ def download_and_transcribe(url, title, pub_date, itunes_summary):
 
         model = whisper.load_model("small.en")
         result = model.transcribe(temp_file.name, language="English", verbose=True, fp16=False)
-        # segment_summary = summarize_transcription(result['text'])
-        segment_summary = 'None'
         # Insert into database
-        insert_transcription(result['text'], title, url, pub_date, segment_summary, itunes_summary)
+        insert_transcription(result['text'], title, url, pub_date, itunes_summary)
 
 def main():
     target_date = sys.argv[1] if len(sys.argv) > 1 else datetime.now().strftime('%Y-%m-%d')
