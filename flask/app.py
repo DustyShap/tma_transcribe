@@ -75,6 +75,8 @@ def search():
     queries = [request.args.get(f'query{i}', default='') for i in range(1, 6)]  # Support up to 5 queries
     year = request.args.get('year', type=int, default=None)
     month = request.args.get('month', type=int, default=None)
+    day = request.args.get('day', type=int, default=None)
+
     page = request.args.get('page', 1, type=int)  # Current page
     per_page = 20  # Items per page
 
@@ -104,6 +106,12 @@ def search():
             count_query += " AND EXTRACT(MONTH FROM segment_pub_date) = %s"
             params.append(month)
 
+        if year and month and day:
+            sql_query += " AND segment_pub_date = DATE %s"
+            count_query += " AND segment_pub_date = DATE %s"
+            # Construct the full date string YYYY-MM-DD
+            full_date = f"{year}-{month:02d}-{day:02d}"
+            params.append(full_date)
         # Fetch the count of relevant transcriptions
         cur.execute(count_query, params)
         total_results = cur.fetchone()[0]
@@ -123,6 +131,8 @@ def search():
     if year:
         if month:
             search_description += f" in {month}/{year}"
+        if year and month and day:
+            search_description += f" for {year}-{month:02d}-{day:02d}"
         else:
             search_description += f" in {year}"
     return render_template('index.html', transcriptions=transcriptions, unique_years=unique_years,

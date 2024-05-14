@@ -25,13 +25,16 @@ function toggleAudioPlayer(id) {
 document.addEventListener('DOMContentLoaded', function() {
     const yearDropdown = document.getElementById('yearDropdown');
     const monthDropdown = document.getElementById('monthDropdown');
+    const dayDropdown = document.getElementById('dayDropdown');
 
     yearDropdown.addEventListener('change', function() {
         // Check if a year is selected
         if (this.value) {
-            monthDropdown.removeAttribute('disabled'); // Enable the month dropdown
+            monthDropdown.removeAttribute('disabled');
+            dayDropdown.removeAttribute('disabled');// Enable the month dropdown
         } else {
             monthDropdown.setAttribute('disabled', 'disabled'); // Disable the month dropdown
+            dayDropdown.setAttribute('disabled', 'disabled'); // Disable the day dropdown
             monthDropdown.value = ''; // Optionally reset the month value
         }
     });
