@@ -45,7 +45,7 @@ def transcriptions():
 
         # Fetch paginated transcriptions
         cur.execute("""
-            SELECT * FROM transcriptions 
+            SELECT * FROM transcriptions
             ORDER BY segment_pub_date DESC, segment_title ASC
             LIMIT %s OFFSET %s;
         """, (per_page, offset))
@@ -110,7 +110,7 @@ def search():
         total_pages = (total_results + per_page - 1) // per_page
 
         # Fetch the relevant transcriptions
-        sql_query += " ORDER BY segment_pub_date DESC LIMIT %s OFFSET %s"
+        sql_query += " ORDER BY segment_pub_date DESC, segment_title ASC LIMIT %s OFFSET %s"
         params.extend([per_page, (page - 1) * per_page])
         cur.execute(sql_query, params)
         transcriptions = cur.fetchall()
