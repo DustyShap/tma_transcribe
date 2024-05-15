@@ -1,0 +1,57 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background: url('/static/img/tmastl.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.container {
+    text-align: center;
+    width: 90%;
+    max-width: 600px;
+    background-color: rgba(255, 255, 255, 0.9); /* Increase opacity for better visibility */
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25); /* Enhance shadow for more depth */
+    border: 1px solid #ddd; /* Subtle border to define the edges */
+}
+
+h1, p {
+    color: #2c5282;
+}
+
+button {
+    background-color: #4a5568;
+    color: white;
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+button:hover {
+    background-color: #2c5282;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Media Queries for Mobile Devices */
+@media (max-width: 768px) {
+    .container {
+        width: 80%; /* Reduces width to avoid touching the screen edges */
+        margin: 10px; /* Adds margin around the container */
+        padding: 15px; /* Increases padding for better spacing inside the container */
+    }
+    body {
+        padding: 10px; /* Adds padding around the entire body to prevent any element from touching the edges */
+    }
+}

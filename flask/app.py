@@ -4,6 +4,7 @@ from models import Transcription
 from create import create_app
 import os
 import psycopg2
+import random
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -28,7 +29,32 @@ def fetch_unique_years(cursor):
     """)
     return sorted({year[0] for year in cursor.fetchall()}, reverse=True)
 
-
+def get_random_segment():
+    conn = None
+    url = None
+    date = None
+    try:
+        conn = psycopg2.connect(
+            dbname=os.environ['POSTGRES_DB'],
+            user=os.environ['POSTGRES_USER'],
+            password=os.environ['POSTGRES_PASSWORD'],
+            host=os.environ['POSTGRES_HOST'],
+            port=os.environ['POSTGRES_PORT'],
+        )
+        cur = conn.cursor()
+        cur.execute("""
+        SELECT segment_url, segment_pub_date, segment_title from transcriptions
+        """)
+        results = cur.fetchall()
+        if results:
+            url, date, segment = random.choice(results)
+        cur.close()
+    except Exception as e:
+        print(f"Database error: {e}")
+    finally:
+        if conn is not None and conn.closed == 0:
+            conn.close()
+    return url, date, segment
 
 @app.route('/')
 def transcriptions():
@@ -141,6 +167,19 @@ def search():
     return render_template('index.html', transcriptions=transcriptions, unique_years=unique_years,
                            total_pages=total_pages, current_page=page, queries=queries, year=year, month=month, search_description=search_description)
 
+@app.route('/skeleton')
+def skeleton():
+    file_url, date, segment = get_random_segment()
+    if date:
+        year = date.year
+        month = date.month
+        day = date.day
+        date_str = date.strftime('%Y-%m-%d')
+    else:
+        year = month = day = date_str = 'Unknown'
+
+    return render_template('play_segment.html', file_url=file_url, date=date_str, year=year, month=month, day=day,
+                           segment=segment)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8080, debug=True)
