@@ -129,11 +129,14 @@ def search():
     search_terms = ', '.join(filter(None, queries))
     search_description = f"Search results for: {search_terms}"
     if year:
-        if month:
+        if month and day:
+            # Year, month, and day are specified
+            search_description += f"{year}-{month:02d}-{day:02d}"
+        elif month:
+            # Only year and month are specified
             search_description += f" in {month}/{year}"
-        if year and month and day:
-            search_description += f" for {year}-{month:02d}-{day:02d}"
         else:
+            # Only year is specified
             search_description += f" in {year}"
     return render_template('index.html', transcriptions=transcriptions, unique_years=unique_years,
                            total_pages=total_pages, current_page=page, queries=queries, year=year, month=month, search_description=search_description)
