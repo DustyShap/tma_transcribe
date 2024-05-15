@@ -227,3 +227,18 @@ audio {
     background-color: #007bff;  /* Active item background color */
     color: white;               /* Active item text color */
 }
+
+.random-segment-link {
+    color: white; /* Change text color to white */
+    background-color: #007bff; /* Add a background color */
+    padding: 10px 20px; /* Add some padding */
+    border-radius: 5px; /* Optional: round the corners */
+    text-decoration: none; /* Remove underline */
+    font-weight: bold; /* Make the text bold */
+    display: inline-block; /* Ensure it behaves like a button */
+    margin: 10px 0; /* Add some margin */
+}
+
+.random-segment-link:hover {
+    background-color: #0056b3; /* Darken the background on hover */
+}
