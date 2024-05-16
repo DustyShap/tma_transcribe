@@ -7,22 +7,18 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/TMAflatlogo.png') }}">
 </head>
 <body>
-    <main>
+    <main class="container">
         <div class="disclaimer">
             <p><strong>Notice of Non-Affiliation and Disclaimer:</strong> This is a fan-run app and is not affiliated, associated, authorized, endorsed by, or in any way officially connected with <a href="https://www.tmastl.com/">TMASTL</a></p>
         </div>
-    </main>
-    <div class="container">
         <header>
             <h1><a href="{{ url_for('transcriptions') }}" style="text-decoration: none; color: inherit;">TMA Audio</a></h1>
             <a href="{{ url_for('skeleton') }}" class="button random-segment-link">Random Segment</a>
         </header>
-
-   <main class="container">
-               <div class="description">
-            <p>Search through audio segments from all historical TMA segments by their transcription and/or date.</p>
+        <div class="description">
+            <p>Search through audio segments from all historical TMA segments by their transcription and/or date.<br> Click a segment title to view the complete transcription</p>
         </div>
-        <form id='search_form' action="{{ url_for('search') }}" method="get">
+        <form id="search_form" action="{{ url_for('search') }}" method="get">
             <div class="form-group">
                 <label for="query1">Search for up to 5 words that appear in transcriptions:</label>
                 <div id="queryInputs">
@@ -32,43 +28,37 @@
                 <p class="info-text">Each searched word must appear in the transcribed text of a segment for it to be returned as a result.</p>
             </div>
             <div class="form-group">
-                <label for="yearDropdown">Select Year</label>
-                <select name="year" id="yearDropdown" class="form-control">
-                    <option value="">Select Year</option>
-                    {% for year in unique_years %}
-                    <option value="{{ year }}">{{ year }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="monthDropdown">Select Month</label>
-                <select name="month" id="monthDropdown" class="form-control" disabled>
-                    <option value="">Select Month</option>
-                    {% for m in range(1, 13) %}
-                    <option value="{{ m }}">{{ m }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="dayDropdown">Select Day</label>
-                <select name="day" id="dayDropdown" class="form-control" disabled>
-                    <option value="">Select Day</option>
-                    {% for d in range(1, 32) %} <!-- Assuming all months could have up to 31 days -->
-                    <option value="{{ d }}">{{ d }}</option>
-                    {% endfor %}
-                </select>
+                <label>Select Date</label>
+                <div class="date-inputs">
+                    <select name="year" id="yearDropdown" class="form-control">
+                        <option value="">Select Year</option>
+                        {% for year in unique_years %}
+                        <option value="{{ year }}">{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="month" id="monthDropdown" class="form-control" disabled>
+                        <option value="">Select Month</option>
+                        {% for m in range(1, 13) %}
+                        <option value="{{ m }}">{{ m }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="day" id="dayDropdown" class="form-control" disabled>
+                        <option value="">Select Day</option>
+                        {% for d in range(1, 32) %} <!-- Assuming all months could have up to 31 days -->
+                        <option value="{{ d }}">{{ d }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
             <div class="form-group">
                 <button type="submit" class="button-primary">Search</button>
             </div>
         </form>
-    </main>
-
         <section id="transcriptions" class="transcriptions">
             <div class="search-results">
                 <h2>{{ search_description }}</h2>
             </div>
-              {% for transcription in transcriptions %}
+            {% for transcription in transcriptions %}
             <div class="transcription">
                 <h2 class="segment-title" onclick="toggleVisibility('content{{ loop.index }}')">
                     {{ transcription[2] }} <!-- Assuming transcription.segment_title is the third element in the tuple -->
@@ -97,50 +87,49 @@
             <p>No transcriptions found.</p>
             {% endfor %}
         </section>
-    </div>
-<nav aria-label="Page navigation">
-    <ul class="pagination">
-        {% if current_page > 1 %}
-            <li class="page-item">
-                <a class="page-link" href="{{ url_for(request.endpoint, page=1, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">First</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="{{ url_for(request.endpoint, page=current_page - 1, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">Previous</a>
-            </li>
-        {% endif %}
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if current_page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for(request.endpoint, page=1, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for(request.endpoint, page=current_page - 1, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">Previous</a>
+                    </li>
+                {% endif %}
 
-        {% set window = 5 %}
-        {% set left = current_page - window // 2 %}
-        {% set right = current_page + window // 2 %}
-        {% if left < 1 %}
-            {% set right = right - left + 1 %}
-            {% set left = 1 %}
-        {% endif %}
-        {% if right > total_pages %}
-            {% set left = left - (right - total_pages) %}
-            {% set right = total_pages %}
-            {% if left < 1 %}
-                {% set left = 1 %}
-            {% endif %}
-        {% endif %}
+                {% set window = 5 %}
+                {% set left = current_page - window // 2 %}
+                {% set right = current_page + window // 2 %}
+                {% if left < 1 %}
+                    {% set right = right - left + 1 %}
+                    {% set left = 1 %}
+                {% endif %}
+                {% if right > total_pages %}
+                    {% set left = left - (right - total_pages) %}
+                    {% set right = total_pages %}
+                    {% if left < 1 %}
+                        {% set left = 1 %}
+                    {% endif %}
+                {% endif %}
 
-        {% for i in range(left, right + 1) %}
-            <li class="page-item {% if i == current_page %}active{% endif %}">
-                <a class="page-link" href="{{ url_for(request.endpoint, page=i, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">{{ i }}</a>
-            </li>
-        {% endfor %}
+                {% for i in range(left, right + 1) %}
+                    <li class="page-item {% if i == current_page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for(request.endpoint, page=i, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">{{ i }}</a>
+                    </li>
+                {% endfor %}
 
-        {% if current_page < total_pages %}
-            <li class="page-item">
-                <a class="page-link" href="{{ url_for(request.endpoint, page=current_page + 1, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">Next</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="{{ url_for(request.endpoint, page=total_pages, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">Last</a>
-            </li>
-        {% endif %}
-    </ul>
-</nav>
-
+                {% if current_page < total_pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for(request.endpoint, page=current_page + 1, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for(request.endpoint, page=total_pages, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">Last</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </main>
     <script src="{{ url_for('static', filename='scripts/scripts.js') }}"></script>
 </body>
 </html>
