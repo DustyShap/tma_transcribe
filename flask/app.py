@@ -170,6 +170,7 @@ def search():
 @app.route('/skeleton')
 def skeleton():
     file_url, date, segment = get_random_segment()
+    filename = os.path.basename(file_url)
     if date:
         year = date.year
         month = date.month
@@ -179,7 +180,7 @@ def skeleton():
         year = month = day = date_str = 'Unknown'
 
     return render_template('play_segment.html', file_url=file_url, date=date_str, year=year, month=month, day=day,
-                           segment=segment)
+                           segment=segment, filename=filename)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8080, debug=True)

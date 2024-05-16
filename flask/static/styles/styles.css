@@ -1,24 +1,25 @@
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f4;
-    color: #1C2D59; /* Dark brand color for text */
-    line-height: 1.6;
-    margin: 0;
-    padding: 0;
-}
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #1C2D59; /* Dark brand color for text */
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        }
 
-.container {
-    width: 80%;
-    margin: auto;
-    overflow: hidden;
-}
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            text-align: center; /* Center content */
+        }
 
-header {
-    background: #1C2D59; /* Dark brand color for header background */
-    color: #fff;
-    padding: 20px;
-    text-align: center;
-}
+        header {
+            background: #1C2D59; /* Dark brand color for header background */
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
 
 header h1 {
     margin: 0;
@@ -30,7 +31,7 @@ header h1 {
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 .segment-title {
@@ -79,13 +80,15 @@ header h1 {
     font-size: 120%;
 }
 
-#search_form {
-    margin-top: 5px;
-}
+        #search_form {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
+            margin-bottom: 20px;
+            text-align: left;
+        }
 
-{
-    font-weight: bold;
-}
 
 .pagination li.disabled > .page-link {
     color: #ccc;
@@ -107,7 +110,7 @@ audio {
     outline: none;
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
     input[type="text"] {
         height: 45px;
     }
@@ -117,9 +120,10 @@ audio {
         padding: 20px;
         background-color: #f8f9fa;
         border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
         margin-bottom: 20px;
     }
+
     #queryInputs input {
         margin-top: 10px;
         width: 90%;
@@ -127,17 +131,24 @@ audio {
         border: 1px solid #ccc;
         border-radius: 4px;
     }
+
     #addQueryBtn {
-        margin-top: 10px;
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
     }
+
     #addQueryBtn:hover {
         background-color: #0056b3;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
     }
 
     /* General form styling */
@@ -160,7 +171,7 @@ audio {
     background-color: #fff;
     border-color: #80bdff;
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
 }
 
 /* Specific styles for dropdowns */
@@ -168,27 +179,43 @@ audio {
     margin-bottom: 0.5rem;
 }
 
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        .info-text {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 10px;
+        }
+
 .button-primary {
-    color: #fff;
-    background-color: #007bff;  /* Primary blue */
-    border-color: #007bff;
-    padding: 0.5rem 1rem;
-    font-size: 1.25rem;
-    line-height: 1.5;
-    border-radius: 0.3rem;
-    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    cursor: pointer; /* Ensures the cursor changes to a pointer to indicate it's clickable */
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
 }
 
-.button-primary:hover, .button-primary:focus {
-    background-color: #0056b3; /* Darker blue on hover/focus */
-    border-color: #004085;
-}
+        .button-primary:hover {
+            background-color: #0056b3;
+        }
 
 .button-primary:active {
     background-color: #004885; /* Even darker blue when the button is clicked */
     border-color: #003365;
-    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125); /* Adds a subtle inset shadow to simulate depth when pressed */
+    box-shadow: inset 0 3px 5px rgb(0 0 0 / 12.5%); /* Adds a subtle inset shadow to simulate depth when pressed */
 }
 
 .query-input { margin-top: 10px; }
@@ -241,4 +268,26 @@ audio {
 
 .random-segment-link:hover {
     background-color: #0056b3; /* Darken the background on hover */
+}
+
+.disclaimer {
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.description {
+    margin-bottom: 20px;
+    font-size: 1em;
+    color: #333;
 }

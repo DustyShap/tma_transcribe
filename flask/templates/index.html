@@ -1,50 +1,68 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>TMA Transcribed</title>
+    <title>TMA Audio</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/TMAflatlogo.png') }}">
 </head>
-<!--<body onload="highlightSearchTerm('{{ query }}', 'transcriptions')">-->
 <body>
+    <main>
+        <div class="disclaimer">
+            <p><strong>Notice of Non-Affiliation and Disclaimer:</strong> This is a fan-run app and is not affiliated, associated, authorized, endorsed by, or in any way officially connected with <a href="https://www.tmastl.com/">TMASTL</a></p>
+        </div>
+    </main>
     <div class="container">
         <header>
-            <h1><a href="{{ url_for('transcriptions') }}" style="text-decoration: none; color: inherit;">TMA Segments</a></h1>
+            <h1><a href="{{ url_for('transcriptions') }}" style="text-decoration: none; color: inherit;">TMA Audio</a></h1>
             <a href="{{ url_for('skeleton') }}" class="button random-segment-link">Random Segment</a>
         </header>
 
-           <form id='search_form' action="{{ url_for('search') }}" method="get">
-            <div>
-                <label>Search for up to 5 words that appear in transcriptions:</label>
+   <main class="container">
+               <div class="description">
+            <p>Search through audio segments from all historical TMA segments by their transcription and/or date.</p>
+        </div>
+        <form id='search_form' action="{{ url_for('search') }}" method="get">
+            <div class="form-group">
+                <label for="query1">Search for up to 5 words that appear in transcriptions:</label>
                 <div id="queryInputs">
-                    <input type="text" name="query1" placeholder="Search transcriptions...">
+                    <input type="text" id="query1" name="query1" placeholder="Search transcriptions...">
                 </div>
                 <button type="button" id="addQueryBtn" onclick="addQueryInput()">Add Another Search Term</button>
                 <p class="info-text">Each searched word must appear in the transcribed text of a segment for it to be returned as a result.</p>
             </div>
-            <div style="margin-top: 20px;">
-<select name="year" id="yearDropdown" class="form-control">
-    <option value="">Select Year</option>
-    {% for year in unique_years %}
-    <option value="{{ year }}">{{ year }}</option>
-    {% endfor %}
-</select>
-<select name="month" id="monthDropdown" class="form-control" disabled>
-    <option value="">Select Month</option>
-    {% for m in range(1, 13) %}
-    <option value="{{ m }}">{{ m }}</option>
-    {% endfor %}
-</select>
+            <div class="form-group">
+                <label for="yearDropdown">Select Year</label>
+                <select name="year" id="yearDropdown" class="form-control">
+                    <option value="">Select Year</option>
+                    {% for year in unique_years %}
+                    <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="monthDropdown">Select Month</label>
+                <select name="month" id="monthDropdown" class="form-control" disabled>
+                    <option value="">Select Month</option>
+                    {% for m in range(1, 13) %}
+                    <option value="{{ m }}">{{ m }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="dayDropdown">Select Day</label>
                 <select name="day" id="dayDropdown" class="form-control" disabled>
-    <option value="">Select Day</option>
-    {% for d in range(1, 32) %} <!-- Assuming all months could have up to 31 days -->
-    <option value="{{ d }}">{{ d }}</option>
-    {% endfor %}
-</select><br>
-<button type="submit" class="button-primary">Search</button>
+                    <option value="">Select Day</option>
+                    {% for d in range(1, 32) %} <!-- Assuming all months could have up to 31 days -->
+                    <option value="{{ d }}">{{ d }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="button-primary">Search</button>
             </div>
         </form>
+    </main>
 
         <section id="transcriptions" class="transcriptions">
             <div class="search-results">

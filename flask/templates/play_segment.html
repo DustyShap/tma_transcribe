@@ -10,9 +10,10 @@
     <title>{{ filename }}</title>
 </head>
 <body>
+
     <div class="container">
-        <!-- <h1>Now Playing: {{ filename }}</h1> -->
-        <p>Segment: {{ segment }}</p>
+{#        <h1>Now Playing: {{ filename }}</h1>#}
+        <p>{{ segment }}</p>
           <p>Date: <a href="{{ url_for('search', year=year, month=month, day=day) }}">{{ date }}</a></p>
         <audio controls preload="none">
             <source src="{{ file_url }}" type="audio/mpeg">

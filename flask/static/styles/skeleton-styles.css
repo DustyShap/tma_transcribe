@@ -1,5 +1,5 @@
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: Poppins, sans-serif;
     line-height: 1.6;
     margin: 0;
     padding: 0;
@@ -17,10 +17,10 @@ body {
     text-align: center;
     width: 90%;
     max-width: 600px;
-    background-color: rgba(255, 255, 255, 0.9); /* Increase opacity for better visibility */
+    background-color: rgb(255 255 255 / 90%); /* Increase opacity for better visibility */
     border-radius: 10px;
     padding: 20px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.25); /* Enhance shadow for more depth */
+    box-shadow: 0 4px 20px rgb(0 0 0 / 25%); /* Enhance shadow for more depth */
     border: 1px solid #ddd; /* Subtle border to define the edges */
 }
 
@@ -41,16 +41,17 @@ button {
 
 button:hover {
     background-color: #2c5282;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
 }
 
 /* Media Queries for Mobile Devices */
-@media (max-width: 768px) {
+@media (width <= 768px) {
     .container {
         width: 80%; /* Reduces width to avoid touching the screen edges */
         margin: 10px; /* Adds margin around the container */
         padding: 15px; /* Increases padding for better spacing inside the container */
     }
+
     body {
         padding: 10px; /* Adds padding around the entire body to prevent any element from touching the edges */
     }
