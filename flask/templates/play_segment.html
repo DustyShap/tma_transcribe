@@ -3,24 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preload" href="/static/img/tmastl.jpg" as="image">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" as="style">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/skeleton-styles.css') }}">
-    <title>{{ filename }}</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/TMAflatlogo.png') }}">
+    <title>{{ segment }}</title>
 </head>
 <body>
+    <main class="container">
+        <div class="disclaimer">
+            <p><strong>Notice of Non-Affiliation and Disclaimer:</strong> This is a fan-run app and is not affiliated, associated, authorized, endorsed by, or in any way officially connected with <a href="https://www.tmastl.com/">TMASTL</a></p>
+        </div>
+        <header>
+            <h1><a href="{{ url_for('transcriptions') }}" style="text-decoration: none; color: inherit;">TMA Random Segment</a></h1>
+        </header>
+        <section class="content">
+            <p><b>Segment: </b>{{ segment }}</p>
+            <p>Date: <a href="{{ url_for('search', year=year, month=month, day=day) }}">{{ date }}</a></p>
+            <div class="audio-player-wrapper">
+                <audio controls preload="none">
+                    <source src="{{ file_url }}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+            <button class="button-primary" onclick="refreshPage()">Play Another Segment</button>
+            <a href="{{ url_for('transcriptions') }}" class="button-primary">Home</a>
 
-    <div class="container">
-{#        <h1>Now Playing: {{ filename }}</h1>#}
-        <p>{{ segment }}</p>
-          <p>Date: <a href="{{ url_for('search', year=year, month=month, day=day) }}">{{ date }}</a></p>
-        <audio controls preload="none">
-            <source src="{{ file_url }}" type="audio/mpeg">
-            Your browser does not support the audio element.
-        </audio><br>
-        <button onclick="refreshPage()">Play Another Segment</button>
-    </div>
+        </section>
+    </main>
     <script>
         function refreshPage() {
             window.location.reload();

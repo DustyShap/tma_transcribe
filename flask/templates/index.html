@@ -13,11 +13,11 @@
         </div>
         <header>
             <h1><a href="{{ url_for('transcriptions') }}" style="text-decoration: none; color: inherit;">TMA Audio</a></h1>
-            <a href="{{ url_for('skeleton') }}" class="button random-segment-link">Random Segment</a>
         </header>
         <div class="description">
             <p>Search through audio segments from all historical TMA segments by their transcription and/or date.<br> Click a segment title to view the complete transcription</p>
         </div>
+
         <form id="search_form" action="{{ url_for('search') }}" method="get">
             <div class="form-group">
                 <label for="query1">Search for up to 5 words that appear in transcriptions:</label>
@@ -52,6 +52,8 @@
             </div>
             <div class="form-group">
                 <button type="submit" class="button-primary">Search</button>
+                <a href="{{ url_for('skeleton') }}" class="button-primary">Random Segment</a>
+
             </div>
         </form>
         <section id="transcriptions" class="transcriptions">
@@ -129,6 +131,7 @@
                 {% endif %}
             </ul>
         </nav>
+
     </main>
     <script src="{{ url_for('static', filename='scripts/scripts.js') }}"></script>
 </body>

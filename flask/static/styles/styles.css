@@ -198,6 +198,9 @@ input[type="text"], select {
     cursor: pointer;
     font-size: 1em;
     transition: background-color 0.3s;
+    text-decoration: none; /* Remove underline */
+    margin-top: 20px;
+
 }
 
 .button-primary:hover {
@@ -257,11 +260,10 @@ input[type="text"], select {
     color: white; /* Change text color to white */
     background-color: #007bff; /* Add a background color */
     padding: 10px 20px; /* Add some padding */
-    border-radius: 5px; /* Optional: round the corners */
     text-decoration: none; /* Remove underline */
-    font-weight: bold; /* Make the text bold */
     display: inline-block; /* Ensure it behaves like a button */
-    margin: 10px 0; /* Add some margin */
+    margin: 10px; /* Add some margin */
+    margin-bottom: 30px;
 }
 
 .random-segment-link:hover {

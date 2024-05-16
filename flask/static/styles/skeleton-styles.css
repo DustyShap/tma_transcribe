@@ -1,35 +1,63 @@
 body {
-    font-family: Poppins, sans-serif;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #1C2D59; /* Dark brand color for text */
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background: url('/static/img/tmastl.jpg') no-repeat center center fixed;
-    background-size: cover;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
 }
-
 .container {
-    text-align: center;
-    width: 90%;
-    max-width: 600px;
-    background-color: rgb(255 255 255 / 90%); /* Increase opacity for better visibility */
-    border-radius: 10px;
+    width: 80%;
+    max-width: 1200px; /* Max width to limit excessive stretching on large screens */
+    margin: auto;
+    overflow: hidden;
+    text-align: center; /* Center content */
+}
+
+header {
+    background: #1C2D59; /* Dark brand color for header background */
+    color: #fff;
     padding: 20px;
-    box-shadow: 0 4px 20px rgb(0 0 0 / 25%); /* Enhance shadow for more depth */
-    border: 1px solid #ddd; /* Subtle border to define the edges */
+    text-align: center;
 }
 
-h1, p {
-    color: #2c5282;
+header h1 {
+    margin: 0;
 }
 
-button {
-    background-color: #4a5568;
+header a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.disclaimer {
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+
+
+
+
+.audio-player-wrapper {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+audio {
+    width: 100%;
+    max-width: 100%;
+    outline: none;
+}
+
+.button-primary {
+    background-color: #007bff;
     color: white;
     padding: 12px 24px;
     font-size: 16px;
@@ -37,15 +65,45 @@ button {
     border-radius: 20px;
     cursor: pointer;
     transition: background-color 0.3s, box-shadow 0.3s;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-decoration: none; /* Remove underline */
+
 }
 
-button:hover {
-    background-color: #2c5282;
+.button-primary:hover {
+    background-color: #0056b3;
     box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
 }
 
-/* Media Queries for Mobile Devices */
-@media (width <= 768px) {
+.button-primary:active {
+    background-color: #004885;
+    box-shadow: inset 0 2px 8px rgb(0 0 0 / 15%);
+}
+
+.content {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
+    margin-top: 20px;
+}
+
+.content h2 {
+    color: #2c5282;
+}
+
+.content p {
+    color: #333;
+}
+
+/* Media queries for mobile devices */
+@media (max-width: 600px) {
+    .audio-player-wrapper audio {
+        width: 100%;
+        max-width: none;
+    }
+
     .container {
         width: 80%; /* Reduces width to avoid touching the screen edges */
         margin: 10px; /* Adds margin around the container */
@@ -55,4 +113,26 @@ button:hover {
     body {
         padding: 10px; /* Adds padding around the entire body to prevent any element from touching the edges */
     }
+}
+header a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.home-link {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white; /* Change text color to white */
+    background-color: #007bff; /* Add a background color */
+    padding: 10px 20px; /* Add some padding */
+    border-radius: 5px; /* Optional: round the corners */
+    text-decoration: none; /* Remove underline */
+    font-weight: bold; /* Make the text bold */
+    display: inline-block; /* Ensure it behaves like a button */
+}
+
+.home-link:hover {
+    background-color: #0056b3; /* Darken the background on hover */
 }
