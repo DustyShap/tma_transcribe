@@ -48,3 +48,39 @@ function showSpinner() {
 window.addEventListener('load', function() {
   document.getElementById('loadingSpinner').style.display = 'none';
 });
+
+function toggleVisibility(segmentId) {
+    var content = document.getElementById(segmentId);
+    var closeButton = document.getElementById('closeButton');
+    if (content.style.display === "none") {
+        // Hide any other open transcriptions
+        var allContent = document.querySelectorAll('.content');
+        allContent.forEach(function(el) {
+            el.style.display = "none";
+        });
+
+        // Show the selected transcription
+        content.style.display = "block";
+
+        // Show the close button
+        closeButton.style.display = "block";
+
+        // Scroll to the selected transcription
+        document.getElementById('transcription' + segmentId.replace('content', '')).scrollIntoView({ behavior: 'smooth' });
+    } else {
+        content.style.display = "none";
+        closeButton.style.display = "none";
+    }
+}
+
+function closeCurrentTranscription() {
+    // Hide all open transcriptions
+    var allContent = document.querySelectorAll('.content');
+    allContent.forEach(function(el) {
+        el.style.display = "none";
+    });
+
+    // Hide the close button
+    var closeButton = document.getElementById('closeButton');
+    closeButton.style.display = "none";
+}
