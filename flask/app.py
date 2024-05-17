@@ -165,8 +165,20 @@ def search():
         else:
             # Only year is specified
             search_description += f" in {year}"
-    return render_template('index.html', transcriptions=transcriptions, unique_years=unique_years,
-                           total_pages=total_pages, current_page=page, queries=queries, year=year, month=month, search_description=search_description, max=max, min=min)
+    return render_template(
+        'index.html',
+        transcriptions=transcriptions,
+        unique_years=unique_years,
+        total_pages=total_pages,
+        current_page=page,
+        queries=queries,
+        year=year,
+        month=month,
+        day=day,
+        search_description=search_description,
+        max=max,
+        min=min
+    )
 
 @app.route('/skeleton')
 def skeleton():
