@@ -170,7 +170,7 @@ def search():
     if year:
         if month and day:
             # Year, month, and day are specified
-            search_description += f"{year}-{month:02d}-{day:02d}"
+            search_description += f" in {year}-{month:02d}-{day:02d}"
         elif month:
             # Only year and month are specified
             search_description += f" in {month}/{year}"
