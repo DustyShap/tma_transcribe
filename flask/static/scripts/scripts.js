@@ -39,8 +39,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+// Add this to your scripts.js or directly in a <script> tag in your HTML
 function showSpinner() {
-  document.getElementById('loadingSpinner').style.display = 'block';
+  document.getElementById('loadingSpinner').style.display = 'flex';
 }
 
 // Optional: Add an event listener to hide the spinner when the page loads
