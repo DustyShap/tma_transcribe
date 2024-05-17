@@ -39,3 +39,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+function showSpinner() {
+  document.getElementById('loadingSpinner').style.display = 'block';
+}
+
+// Optional: Add an event listener to hide the spinner when the page loads
+window.addEventListener('load', function() {
+  document.getElementById('loadingSpinner').style.display = 'none';
+});

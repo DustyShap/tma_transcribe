@@ -50,9 +50,12 @@
                 </div>
             </div>
             <div class="form-group">
-                <button type="submit" class="button-primary">Search</button>
+                <button type="submit" class="button-primary" onclick="showSpinner()">Search</button>
+                <a href="{{ url_for('skeleton') }}" class="button-primary">Random Segment</a>
+
             </div>
         </form>
+         <div class="spinner" id="loadingSpinner"></div>
         <section id="transcriptions" class="transcriptions">
             <div class="search-results">
                 <h2>{{ search_description }}</h2>
