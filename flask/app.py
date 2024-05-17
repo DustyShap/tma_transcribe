@@ -92,7 +92,8 @@ def transcriptions():
         transcriptions=transcriptions,
         unique_years=unique_years,
         current_page=page,
-        total_pages=total_pages
+        total_pages=total_pages,
+        max=max, min=min
     )
 
 
@@ -165,7 +166,7 @@ def search():
             # Only year is specified
             search_description += f" in {year}"
     return render_template('index.html', transcriptions=transcriptions, unique_years=unique_years,
-                           total_pages=total_pages, current_page=page, queries=queries, year=year, month=month, search_description=search_description)
+                           total_pages=total_pages, current_page=page, queries=queries, year=year, month=month, search_description=search_description, max=max, min=min)
 
 @app.route('/skeleton')
 def skeleton():

@@ -90,47 +90,45 @@
             {% endfor %}
         </section>
         <nav aria-label="Page navigation">
-            <ul class="pagination">
-                {% if current_page > 1 %}
-                    <li class="page-item">
-                        <a class="page-link" href="{{ url_for(request.endpoint, page=1, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">First</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="{{ url_for(request.endpoint, page=current_page - 1, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">Previous</a>
-                    </li>
-                {% endif %}
+    <ul class="pagination">
+        {% if current_page > 1 %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for(request.endpoint, page=1, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for(request.endpoint, page=current_page - 1, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">Previous</a>
+            </li>
+        {% endif %}
 
-                {% set window = 5 %}
-                {% set left = current_page - window // 2 %}
-                {% set right = current_page + window // 2 %}
-                {% if left < 1 %}
-                    {% set right = right - left + 1 %}
-                    {% set left = 1 %}
-                {% endif %}
-                {% if right > total_pages %}
-                    {% set left = left - (right - total_pages) %}
-                    {% set right = total_pages %}
-                    {% if left < 1 %}
-                        {% set left = 1 %}
-                    {% endif %}
-                {% endif %}
+        {% set window = 5 %}
+        {% set left = max(current_page - window // 2, 1) %}
+        {% set right = min(current_page + window // 2, total_pages) %}
 
-                {% for i in range(left, right + 1) %}
-                    <li class="page-item {% if i == current_page %}active{% endif %}">
-                        <a class="page-link" href="{{ url_for(request.endpoint, page=i, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">{{ i }}</a>
-                    </li>
-                {% endfor %}
+        {% if left > 1 %}
+            <li class="page-item"><span class="page-link">...</span></li>
+        {% endif %}
 
-                {% if current_page < total_pages %}
-                    <li class="page-item">
-                        <a class="page-link" href="{{ url_for(request.endpoint, page=current_page + 1, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">Next</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="{{ url_for(request.endpoint, page=total_pages, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">Last</a>
-                    </li>
-                {% endif %}
-            </ul>
-        </nav>
+        {% for page_num in range(left, right + 1) %}
+            <li class="page-item {% if page_num == current_page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for(request.endpoint, page=page_num, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">{{ page_num }}</a>
+            </li>
+        {% endfor %}
+
+        {% if right < total_pages %}
+            <li class="page-item"><span class="page-link">...</span></li>
+        {% endif %}
+
+        {% if current_page < total_pages %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for(request.endpoint, page=current_page + 1, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for(request.endpoint, page=total_pages, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">Last</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+
 
     </main>
     <script src="{{ url_for('static', filename='scripts/scripts.js') }}"></script>

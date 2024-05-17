@@ -1,3 +1,4 @@
+/* General Styles */
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -24,6 +25,11 @@ header {
 
 header h1 {
     margin: 0;
+}
+
+header a {
+    color: inherit;
+    text-decoration: none;
 }
 
 .transcription {
@@ -198,9 +204,6 @@ input[type="text"], select {
     cursor: pointer;
     font-size: 1em;
     transition: background-color 0.3s;
-    text-decoration: none; /* Remove underline */
-    margin-top: 20px;
-
 }
 
 .button-primary:hover {
@@ -231,6 +234,7 @@ input[type="text"], select {
     padding: 20px 0;          /* Add padding for spacing from other elements */
     list-style: none;         /* Remove default list styling */
     margin: 20px 0;           /* Add margin around the pagination for better spacing */
+    overflow-x: auto;         /* Allow horizontal scrolling */
 }
 
 .pagination .page-item {
@@ -260,10 +264,11 @@ input[type="text"], select {
     color: white; /* Change text color to white */
     background-color: #007bff; /* Add a background color */
     padding: 10px 20px; /* Add some padding */
+    border-radius: 5px; /* Optional: round the corners */
     text-decoration: none; /* Remove underline */
+    font-weight: bold; /* Make the text bold */
     display: inline-block; /* Ensure it behaves like a button */
-    margin: 10px; /* Add some margin */
-    margin-bottom: 30px;
+    margin: 10px 0; /* Add some margin */
 }
 
 .random-segment-link:hover {
@@ -306,6 +311,10 @@ label {
 }
 
 @media (max-width: 600px) {
+    .button-primary{
+        padding: 8px 16px; /* Reduce padding inside the button */
+        font-size: 0.9em; /* Reduce font size */
+    }
     .date-inputs {
         flex-direction: column;
     }
@@ -321,4 +330,45 @@ label {
         padding-right: 10px; /* Add padding to the form group */
         padding-left: 10px; /* Add padding to the form group */
     }
+
+    /* Adjust pagination on mobile */
+    .pagination {
+        padding: 10px 0;
+    }
+
+    .pagination .page-link {
+        padding: 5px 8px; /* Reduce padding inside each pagination link */
+        font-size: 0.9em; /* Reduce font size */
+    }
+}
+
+/* Fixed link styling */
+.fixed-link {
+    position: fixed;
+    bottom: 20px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.fixed-link.random-segment-link {
+    right: 20px;
+    background-color: #007bff;
+    color: white;
+}
+
+.fixed-link.random-segment-link:hover {
+    background-color: #0056b3;
+}
+
+.fixed-link.home-link {
+    left: 20px;
+    background-color: #28a745;
+    color: white;
+}
+
+.fixed-link.home-link:hover {
+    background-color: #218838;
 }
