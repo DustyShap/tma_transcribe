@@ -60,13 +60,13 @@
             {% for transcription in transcriptions %}
             <div class="transcription">
                 <h2 class="segment-title" onclick="toggleVisibility('content{{ loop.index }}')">
-                    {{ transcription[2] }} <!-- Assuming transcription.segment_title is the third element in the tuple -->
+                    {{ transcription[2] | remove_mp3 }} <!-- Use the custom filter here -->
                 </h2>
                 <p class="segment-date">
                     Segment Date: <b>{{ transcription[4] }}</b> <!-- Assuming transcription.segment_pub_date is the fifth element -->
                 </p>
                 <p id="content{{ loop.index }}" class="content" style="display: none;">
-                    {{ transcription[1] }} <!-- Assuming transcription.transcribed_text is the second element -->
+                    {{ transcription[1] | highlight(queries) }} <!-- Use the custom filter here -->
                 </p>
                 <a href="javascript:void(0);" class="toggle-audio" onclick="toggleAudioPlayer('audioPlayer{{ loop.index }}')">Listen to Segment</a><br>
                 <div id="audioPlayer{{ loop.index }}" class="audio-player" style="display: none;">

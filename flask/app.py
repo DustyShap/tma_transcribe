@@ -1,11 +1,12 @@
-from flask import Flask, render_template, request
-from sqlalchemy import desc, func, or_, and_
-from models import Transcription
-from create import create_app
 import os
 import psycopg2
 import random
+import re
+from flask import Flask, render_template, request
+from markupsafe import Markup
 from dotenv import load_dotenv
+
+from create import create_app
 
 load_dotenv()
 app = create_app()
@@ -55,7 +56,19 @@ def get_random_segment():
         if conn is not None and conn.closed == 0:
             conn.close()
     return url, date, segment
+@app.template_filter('remove_mp3')
+def remove_mp3(value):
+    if value.endswith('.mp3'):
+        return value[:-4]
+    return value
 
+@app.template_filter('highlight')
+def highlight(text, queries):
+    for query in queries:
+        if query:
+            regex = re.compile(re.escape(query), re.IGNORECASE)
+            text = regex.sub(lambda match: f'<span class="highlight">{match.group(0)}</span>', text)
+    return Markup(text)
 @app.route('/')
 def transcriptions():
     page = request.args.get('page', 1, type=int)  # Get the current page number, defaulting to 1
@@ -86,7 +99,6 @@ def transcriptions():
         conn.close()
 
     total_pages = (total_transcriptions + per_page - 1) // per_page  # Calculate total number of pages
-
     return render_template(
         'index.html',
         transcriptions=transcriptions,

@@ -372,3 +372,8 @@ label {
 .fixed-link.home-link:hover {
     background-color: #218838;
 }
+
+.highlight {
+    background-color: yellow;
+    font-weight: bold;
+}
