@@ -66,7 +66,7 @@
             </div>
             {% for transcription in transcriptions %}
             <div class="transcription">
-                <h2 class="segment-title" onclick="toggleVisibility('content{{ loop.index }}')">
+                <h2 class="segment-title" onclick="toggleVisibility('content{{ loop.index }}', true)">
                     {{ transcription[2] | remove_mp3 }} <!-- Use the custom filter here -->
                 </h2>
                 <p class="segment-date">
@@ -83,7 +83,7 @@
                     </audio>
                 </div>
                 {% if transcription[5] %}
-                <a href="javascript:void(0);" class="toggle-visibility" onclick="toggleVisibility('shownotes{{ loop.index }}')">Display TMA Show Notes</a>
+                <a href="javascript:void(0);" class="toggle-visibility" onclick="toggleVisibility('shownotes{{ loop.index }}', false)">Display TMA Show Notes</a>
                 <p id="shownotes{{ loop.index }}" class="content" style="display: none;">
                     {{ transcription[5] }} <!-- Assuming transcription.segment_show_notes is the sixth element -->
                 </p>

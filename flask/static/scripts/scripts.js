@@ -49,27 +49,36 @@ window.addEventListener('load', function() {
   document.getElementById('loadingSpinner').style.display = 'none';
 });
 
-function toggleVisibility(segmentId) {
+function toggleVisibility(segmentId, isMainContent) {
     var content = document.getElementById(segmentId);
     var closeButton = document.getElementById('closeButton');
     if (content.style.display === "none") {
-        // Hide any other open transcriptions
-        var allContent = document.querySelectorAll('.content');
-        allContent.forEach(function(el) {
-            el.style.display = "none";
-        });
+        // Hide any other open transcriptions if it's main content
+        if (isMainContent) {
+            var allContent = document.querySelectorAll('.content');
+            allContent.forEach(function(el) {
+                el.style.display = "none";
+            });
+        }
 
-        // Show the selected transcription
+        // Show the selected content
         content.style.display = "block";
 
-        // Show the close button
-        closeButton.style.display = "block";
+        // Show the close button if it's main content
+        if (isMainContent) {
+            closeButton.style.display = "block";
+        }
 
-        // Scroll to the selected transcription
-        document.getElementById('transcription' + segmentId.replace('content', '')).scrollIntoView({ behavior: 'smooth' });
+        // Scroll to the selected transcription if it's main content
+        if (isMainContent) {
+            document.getElementById('transcription' + segmentId.replace('content', '')).scrollIntoView({ behavior: 'smooth' });
+        }
     } else {
         content.style.display = "none";
-        closeButton.style.display = "none";
+        // Hide the close button if it's main content
+        if (isMainContent) {
+            closeButton.style.display = "none";
+        }
     }
 }
 
