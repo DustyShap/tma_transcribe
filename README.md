@@ -1,4 +1,5 @@
 # tma_transcribe
 
 ### What
-Experimental app to transcribe segments of [The Morning After](http://insidestl.com/radio-shows/the-morning-after)
+Experimental app to search for, listen to, and view transcriptions of segments of [The Morning After](https://www.tmastl.com/)
+
