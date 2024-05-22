@@ -57,81 +57,88 @@
 
             </div>
         </form>
-        <div class="spinner-container" id="loadingSpinner">
+        <div class="spinner-container" id="loadingSpinner" style="display: none;">
             <div class="spinner"></div>
         </div>
-        <section id="transcriptions" class="transcriptions">
-            <div class="search-results">
-                <h2>{{ search_description }}</h2>
-            </div>
-            {% for transcription in transcriptions %}
-            <div class="transcription">
-                <h2 class="segment-title" onclick="toggleVisibility('content{{ loop.index }}', true)">
-                    {{ transcription[2] | remove_mp3 }} <!-- Use the custom filter here -->
-                </h2>
-                <p class="segment-date">
-                    Segment Date: <b>{{ transcription[4] }}</b> <!-- Assuming transcription.segment_pub_date is the fifth element -->
-                </p>
-                <p id="content{{ loop.index }}" class="content" style="display: none;">
-                    {{ transcription[1] | highlight(queries) }} <!-- Use the custom filter here -->
-                </p>
-                <a href="javascript:void(0);" class="toggle-audio" onclick="toggleAudioPlayer('audioPlayer{{ loop.index }}')">Listen to Segment</a><br>
-                <div id="audioPlayer{{ loop.index }}" class="audio-player" style="display: none;">
-                    <audio controls preload="none">
-                        <source src="{{ transcription[3] }}" type="audio/mpeg">
-                        Your browser does not support the audio tag.
-                    </audio>
-                </div>
-                {% if transcription[5] %}
-                <a href="javascript:void(0);" class="toggle-visibility" onclick="toggleVisibility('shownotes{{ loop.index }}', false)">Display TMA Show Notes</a>
-                <p id="shownotes{{ loop.index }}" class="content" style="display: none;">
-                    {{ transcription[5] }} <!-- Assuming transcription.segment_show_notes is the sixth element -->
-                </p>
+            <section id="transcriptions" class="transcriptions">
+    <div class="search-results">
+        <h2>{{ search_description }}</h2>
+    </div>
+    {% for transcription in transcriptions %}
+    <div class="transcription" id="transcription{{ loop.index }}">
+        <h2 class="segment-title" onclick="toggleVisibility('content{{ loop.index }}', true)">
+            {{ transcription[2] | remove_mp3 }} <!-- Use the custom filter here -->
+        </h2>
+        <p class="segment-date">
+            Segment Date:
+            <b>
+                <a href="{{ url_for('search', year=transcription[4].year, month=transcription[4].month, day=transcription[4].day) }}">
+                    {{ transcription[4] }}
+                </a>
+            </b> <!-- Assuming transcription.segment_pub_date is the fifth element -->
+        </p>
+        <p id="content{{ loop.index }}" class="content" style="display: none;">
+            {{ transcription[1] | highlight(queries) }} <!-- Use the custom filter here -->
+        </p>
+        <a href="javascript:void(0);" class="toggle-audio" onclick="toggleAudioPlayer('audioPlayer{{ loop.index }}', '{{ transcription[2] | remove_mp3 }}')">Listen to Segment</a><br>
+        <div id="audioPlayer{{ loop.index }}" class="audio-player" style="display: none;">
+            <audio controls preload="none" onplay="updateTitle('{{ transcription[2] | remove_mp3 }}')">
+                <source src="{{ transcription[3] }}" type="audio/mpeg">
+                Your browser does not support the audio tag.
+            </audio>
+        </div>
+        {% if transcription[5] %}
+        <a href="javascript:void(0);" class="toggle-visibility" onclick="toggleVisibility('shownotes{{ loop.index }}', false)">Display TMA Show Notes</a>
+        <p id="shownotes{{ loop.index }}" class="content" style="display: none;">
+            {{ transcription[5] }} <!-- Assuming transcription.segment_show_notes is the sixth element -->
+        </p>
+        {% endif %}
+    </div>
+    {% else %}
+    <p>No transcriptions found.</p>
+    {% endfor %}
+</section>
+
+         <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if current_page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for(request.endpoint, page=1, query1=queries[0] if queries else '', query2=queries[1] if queries|length > 1 else '', query3=queries[2] if queries|length > 2 else '', query4=queries[3] if queries|length > 3 else '', query5=queries[4] if queries|length > 4 else '', year=year if year else '', month=month if month else '', day=day if day else '') }}" onclick="showSpinner()">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for(request.endpoint, page=current_page - 1, query1=queries[0] if queries else '', query2=queries[1] if queries|length > 1 else '', query3=queries[2] if queries|length > 2 else '', query4=queries[3] if queries|length > 3 else '', query5=queries[4] if queries|length > 4 else '', year=year if year else '', month=month if month else '', day=day if day else '') }}" onclick="showSpinner()">Previous</a>
+                    </li>
                 {% endif %}
-            </div>
-            {% else %}
-            <p>No transcriptions found.</p>
-            {% endfor %}
-        </section>
-        <nav aria-label="Page navigation">
-    <ul class="pagination">
-        {% if current_page > 1 %}
-            <li class="page-item">
-                <a class="page-link" href="{{ url_for(request.endpoint, page=1, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">First</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="{{ url_for(request.endpoint, page=current_page - 1, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">Previous</a>
-            </li>
-        {% endif %}
 
-        {% set window = 5 %}
-        {% set left = max(current_page - window // 2, 1) %}
-        {% set right = min(current_page + window // 2, total_pages) %}
+                {% set window = 5 %}
+                {% set left = max(current_page - window // 2, 1) %}
+                {% set right = min(current_page + window // 2, total_pages) %}
 
-        {% if left > 1 %}
-            <li class="page-item"><span class="page-link">...</span></li>
-        {% endif %}
+                {% if left > 1 %}
+                    <li class="page-item"><span class="page-link">...</span></li>
+                {% endif %}
 
-        {% for page_num in range(left, right + 1) %}
-            <li class="page-item {% if page_num == current_page %}active{% endif %}">
-                <a class="page-link" href="{{ url_for(request.endpoint, page=page_num, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">{{ page_num }}</a>
-            </li>
-        {% endfor %}
+                {% for page_num in range(left, right + 1) %}
+                    <li class="page-item {% if page_num == current_page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for(request.endpoint, page=page_num, query1=queries[0] if queries else '', query2=queries[1] if queries|length > 1 else '', query3=queries[2] if queries|length > 2 else '', query4=queries[3] if queries|length > 3 else '', query5=queries[4] if queries|length > 4 else '', year=year if year else '', month=month if month else '', day=day if day else '') }}" onclick="showSpinner()">{{ page_num }}</a>
+                    </li>
+                {% endfor %}
 
-        {% if right < total_pages %}
-            <li class="page-item"><span class="page-link">...</span></li>
-        {% endif %}
+                {% if right < total_pages %}
+                    <li class="page-item"><span class="page-link">...</span></li>
+                {% endif %}
 
-        {% if current_page < total_pages %}
-            <li class="page-item">
-                <a class="page-link" href="{{ url_for(request.endpoint, page=current_page + 1, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">Next</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="{{ url_for(request.endpoint, page=total_pages, query1=queries[0] if queries else '', year=year if year else '', month=month if month else '') }}">Last</a>
-            </li>
-        {% endif %}
-    </ul>
-</nav>
+                {% if current_page < total_pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for(request.endpoint, page=current_page + 1, query1=queries[0] if queries else '', query2=queries[1] if queries|length > 1 else '', query3=queries[2] if queries|length > 2 else '', query4=queries[3] if queries|length > 3 else '', query5=queries[4] if queries|length > 4 else '', year=year if year else '', month=month if month else '', day=day if day else '') }}" onclick="showSpinner()">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for(request.endpoint, page=total_pages, query1=queries[0] if queries else '', query2=queries[1] if queries|length > 1 else '', query3=queries[2] if queries|length > 2 else '', query4=queries[3] if queries|length > 3 else '', query5=queries[4] if queries|length > 4 else '', year=year if year else '', month=month if month else '', day=day if day else '') }}" onclick="showSpinner()">Last</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+
     </main>
     <button class="close-button" id="closeButton" onclick="closeCurrentTranscription()">Close Transcription</button>
     <script src="{{ url_for('static', filename='scripts/scripts.js') }}"></script>

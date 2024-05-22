@@ -135,7 +135,7 @@ def search():
             count_query += " AND transcribed_text ILIKE %s"
             params.append(f'%{query}%')
 
-        # Append conditions for year and month
+        # Append conditions for year, month, and day
         if year:
             sql_query += " AND EXTRACT(YEAR FROM segment_pub_date) = %s"
             count_query += " AND EXTRACT(YEAR FROM segment_pub_date) = %s"
@@ -144,13 +144,11 @@ def search():
             sql_query += " AND EXTRACT(MONTH FROM segment_pub_date) = %s"
             count_query += " AND EXTRACT(MONTH FROM segment_pub_date) = %s"
             params.append(month)
+        if day:
+            sql_query += " AND EXTRACT(DAY FROM segment_pub_date) = %s"
+            count_query += " AND EXTRACT(DAY FROM segment_pub_date) = %s"
+            params.append(day)
 
-        if year and month and day:
-            sql_query += " AND segment_pub_date = DATE %s"
-            count_query += " AND segment_pub_date = DATE %s"
-            # Construct the full date string YYYY-MM-DD
-            full_date = f"{year}-{month:02d}-{day:02d}"
-            params.append(full_date)
         # Fetch the count of relevant transcriptions
         cur.execute(count_query, params)
         total_results = cur.fetchone()[0]
@@ -165,18 +163,17 @@ def search():
     finally:
         cur.close()
         conn.close()
+
     search_terms = ', '.join(filter(None, queries))
     search_description = f"Search results for: {search_terms}"
     if year:
         if month and day:
-            # Year, month, and day are specified
             search_description += f" in {year}-{month:02d}-{day:02d}"
         elif month:
-            # Only year and month are specified
             search_description += f" in {month}/{year}"
         else:
-            # Only year is specified
             search_description += f" in {year}"
+
     return render_template(
         'index.html',
         transcriptions=transcriptions,
@@ -191,6 +188,7 @@ def search():
         max=max,
         min=min
     )
+
 
 @app.route('/skeleton')
 def skeleton():

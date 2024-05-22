@@ -44,7 +44,6 @@ function showSpinner() {
   document.getElementById('loadingSpinner').style.display = 'flex';
 }
 
-// Optional: Add an event listener to hide the spinner when the page loads
 window.addEventListener('load', function() {
   document.getElementById('loadingSpinner').style.display = 'none';
 });
@@ -92,4 +91,8 @@ function closeCurrentTranscription() {
     // Hide the close button
     var closeButton = document.getElementById('closeButton');
     closeButton.style.display = "none";
+}
+
+function updateTitle(segmentTitle) {
+    document.title = `TMA Audio - Now Playing: ${segmentTitle}`;
 }

@@ -65,7 +65,7 @@ def get_segments_for_date(feed_url, target_date):
                 # Remove the specific string from itunes_summary
                 itunes_summary = itunes_summary.replace(
                     "Learn more about your ad choices. Visit megaphone.fm/adchoices", "")
-            if enclosure is not None and title is not None:
+            if enclosure is not None and title is not None and 'Balloon' not in title.lower():
                 segments.append((enclosure.get('url'), title, pub_date_parsed, itunes_summary))
 
     return segments
@@ -99,6 +99,9 @@ def main():
         for url, title, pub_date, itunes_summary  in segments:
             if segment_exists(title):
                 print(f"Segment with title '{title}' already exists in the database. Skipping.")
+                continue
+            if "balloon" in title.lower():
+                print(f"Segment with title '{title}' is a Balloon segment. Skipping.")
                 continue
             print(f"Segment with title '{title}' does not exist in the database. Downloading and transcribing.")
             future = executor.submit(download_and_transcribe, url, title, pub_date, itunes_summary)
