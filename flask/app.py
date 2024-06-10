@@ -20,7 +20,22 @@ def get_db_connection():
         host=os.environ['POSTGRES_HOST'],
         port=os.environ['POSTGRES_PORT'],
     )
+    cur = conn.cursor()
+    cur.execute("SET TIME ZONE 'America/New_York';")
+    cur.close()
     return conn
+
+def log_search_activity(conn, queries, year, month, day):
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+            INSERT INTO search_activity (timestamp, query1, query2, query3, query4, query5, year, month, day)
+            VALUES (CURRENT_TIMESTAMP, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (queries[0], queries[1], queries[2], queries[3], queries[4], year, month, day))
+        conn.commit()
+        cur.close()
+    except Exception as e:
+        print(f"Error logging search activity: {e}")
 
 def fetch_unique_years(cursor):
     cursor.execute("""
@@ -120,8 +135,11 @@ def search():
     per_page = 20  # Items per page
 
     conn = get_db_connection()
+
     try:
         cur = conn.cursor()
+        log_search_activity(conn, queries, year, month, day)
+
         unique_years = fetch_unique_years(cur)
 
         # Construct base SQL query
